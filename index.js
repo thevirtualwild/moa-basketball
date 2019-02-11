@@ -12,8 +12,8 @@ Airtable.configure({
   endpointUrl: 'https://api.airtable.com',
   apiKey: airtable_apiKey
 });
-var config_base = Airtable.base('appjnwB9vqNtd1ore');
-var score_base = Airtable.base('apprHXHRMQgbi5WBV');
+var config_base = Airtable.base('appGEyxfx4sS75CnX');
+var score_base = Airtable.base('appaAVPwTAeL1m1tu');
 
 var alldevices = {};
 var allrooms = {};
@@ -23,16 +23,18 @@ var allconfigs = {};
 var courtnames = {};
 var roomnames = {};
 
+
+// console.dir(config_base);
+
 var connectedcourts = {};
 
 function getDataFromAirtable() {
-  // // // // // console.log('gettingDataFromAirtable');
+  console.log('gettingDataFromAirtable');
 
   function getDevices() {
     config_base('Devices').select({}).eachPage(function page(records, fetchNextPage) {
       records.forEach(function(record) {
         ipaddress = record.get('IP Address');
-        // // // // // // // // // console.log('Retrieved', record.get('IP Address'));
 
         location = record.get('Location in Zone');
         zone = record.get('Zone');
@@ -48,9 +50,10 @@ function getDataFromAirtable() {
       });
       fetchNextPage();
     }, function done(err) {
-      if (err) { console.error(err); return; }
+      if (err) { console.error(err); console.log('getDevices error'); return; }
 
-      // // // // // // // console.dir(alldevices);
+      console.log('getDevices complete:');
+      console.log(alldevices);
     });
   }
   function getRooms() {
@@ -74,17 +77,16 @@ function getDataFromAirtable() {
       });
       fetchNextPage();
     }, function done(err) {
-      if (err) { console.error(err); return; }
+      if (err) { console.error(err); console.log('getRooms error'); return; }
 
-      // // // // // // // console.dir(allrooms);
+      console.log('getRooms complete:');
+      console.log(allrooms);
     });
   }
   function getZones() {
-    // // // // // console.log('getting allzones');
     config_base('Zones').select({}).eachPage(function page(records, fetchNextPage) {
       records.forEach(function(record) {
         name = record.get('Name');
-        // // // // // // // // // console.log('Retrieved', name);
 
         rooms = record.get('Rooms');
         courts = record.get('Courts');
@@ -104,9 +106,10 @@ function getDataFromAirtable() {
       });
       fetchNextPage();
     }, function done(err) {
-      if (err) { console.error(err); return; }
+      if (err) { console.error(err); console.log('getZones error'); return; }
 
-      // // // // // // // console.dir(allzones);
+      console.log('getZones complete:');
+      console.log(allzones);
     });
   }
   function getCourts() {
@@ -156,8 +159,6 @@ function getDataFromAirtable() {
       fetchNextPage();
     }, function done(err) {
       if (err) { console.error(err); return; }
-
-      // // // // // // // console.dir(allconfigs);
     });
   }
 
@@ -176,6 +177,7 @@ var teamindex = {};
 var teamscores = {};
 
 function getScoresFromAirtable() {
+
   score_base('Teams').select({}).eachPage(function page(records, fetchNextPage) {
     records.forEach(function(record) {
       allteams[record.id] = record.fields;
@@ -190,13 +192,13 @@ function getScoresFromAirtable() {
   }, function done(err) {
     if (err) { console.error(err); return; }
 
-    // // // // // // // console.dir(allteams);
-    // // // // // // // // // console.log('teamindex:');
-    // // // // // // // console.dir(teamindex);
+    console.dir(allteams);
+    console.log('teamindex:');
+    console.dir(teamindex);
   });
 }
 
-getScoresFromAirtable();
+// getScoresFromAirtable();
 
 // Routing
 app.use(express.static(path.join(__dirname, 'public')), function(req, res) {
@@ -226,16 +228,18 @@ var masters = {};
 
 var courtsandmaster = {};
 
+var randomcourts = 0;
+var courtnum = randomcourts;
+
 
 var gamesplayed = {};
 
 // Web Socket (Socket.io)
 function onConnection(socket) {
 
-  // // // // // console.log('new connection - ' + socket.id);
+  console.log('new connection - ' + socket.id);
   // var gamenum = 1;
 
-  // // // // // // // console.log('socket connected: ' + socket.id);
   var currentHighScore = {
     player: 'none',
     score: 0,
@@ -244,7 +248,6 @@ function onConnection(socket) {
 
   var addedUser = false;
   var gamesrunning;
-  // // // // // // // // console.log('a user connected');
 
   function setSocketMaster() {
     // // // console.log('--setting socket master')
@@ -346,9 +349,12 @@ function onConnection(socket) {
     zoneid = somedevice.zone;
     thiszone = allzones[zoneid];
 
+    // console.log('thiszone' + zoneid);
+    // console.dir(thiszone);
+
     if (thiszone.rooms) {
-      // // // // // console.log('thiszone.rooms');
-      // // // // console.dir(thiszone.rooms);
+      console.log('thiszone.rooms');
+      console.dir(thiszone.rooms);
       roomid = thiszone.rooms[0];
       // // // // // // // // // console.log('findaroom assign');
       // // // // // // // console.dir(somecourt);
@@ -356,6 +362,16 @@ function onConnection(socket) {
       somecourt['room'] = [roomid];
       allcourts[somecourt.id] = somecourt;
       courtnames[somecourt.name] = somecourt;
+
+      // console.log('somecourt');
+      // console.dir(somecourt);
+
+      // config_base('Courts').update(somecourt.id, {
+      //   "Room": [ somecourt.room ]
+      // }, function(err, record) {
+      //     if (err) { console.error(err); return; }
+      //     console.log('room - ' + record.get('Room'));
+      // });
 
       assignCourtToRoom(somecourt, roomid);
     } else {
@@ -371,20 +387,32 @@ function onConnection(socket) {
     //check zone of device for list of currently configured courts, and add to court based on location
     // // // // // // // // // console.log('device in zone: ' + myzone.name);
     // // // // // // // console.dir(myzone);
+    courtnum = randomcourts + 1;
 
-    zoneconfig = allconfigs[myzone.configuration];
+    if (myzone.configuration) {
+      zoneconfig = allconfigs[myzone.configuration];
+      courtnum = zoneconfig[mydevice.location];
+    } else {
+      console.log('findACourt: no configuration');
+    }
     //
     // // // // // // // // // console.log('config data');
     // // // // // // // console.dir(zoneconfig);
 
-    courtnum = zoneconfig[mydevice.location];
 
     if (courtnum) {
       // // // // // // // // console.log('I should be in court #' + courtnum);
+      var mycourt;
+
       var index = courtnum - 1;
-      mycourt = allcourts[myzone.courts[index]];
+      if (myzone.courts) {
+        mycourt = allcourts[myzone.courts[index]];
+      }
       if (mycourt) {
         // // // // // // // // console.log('try court - ' + mycourt);
+        console.log('adding court to device');
+        console.dir(mycourt);
+        mydevice.court = mycourt;
         findARoom(mycourt,mydevice);
       } else {
         // // // // // // // // console.log('no court yet');
@@ -406,15 +434,15 @@ function onConnection(socket) {
     var newdevice = {
       ipaddress: deviceIP,
       location: 'UNKNOWN LOCATION',
-      zone: 'recrPqr6a1f7Nxal8'
+      zone: 'recHU4kI2Q1VTve9v' //default zone record id
     };
 
     // add device to list of devices
     alldevices[deviceIP] = newdevice;
     var devicezone = allzones[newdevice.zone];
 
-    // // // // // console.log('allzones');
-    // // // // console.dir(allzones);
+    // console.log('allzones');
+    // console.dir(allzones);
 
     allzones[newdevice.zone] = devicezone;
     if(devicezone) {
@@ -447,6 +475,8 @@ function onConnection(socket) {
 
 
         //use a random court
+        console.log('randomcourt- devicezone:');
+        console.dir(devicezone);
         findACourt(newdevice, devicezone);
     });
   }
@@ -619,8 +649,8 @@ function onConnection(socket) {
     }
 
     if (somecourt.room) {
-      // // // // // // // // // console.log('assigning court to room - ');
-      // // // // // // // console.dir(somecourt.room);
+      console.log('assigning court to room - ');
+      console.dir(somecourt.room);
     } else {
       // // // // // // // // console.log('trying to update court info as - ');
       // // // // // // // console.dir(fullroomdata);
@@ -637,8 +667,11 @@ function onConnection(socket) {
 
 
   function addCourtGameScore(courtgamedata) {
-    // console.log('add score to database socket.gamename - ' + socket.gamename);
+    console.log('add score to database socket.gamename - ' + socket.gamename);
     // console.dir(courtgamedata);
+
+
+    pushScoreToDatabase(courtgamedata);
 
 
     var thisgamesroom = roomnames[socket.roomname];
@@ -690,7 +723,7 @@ function onConnection(socket) {
 
 
 
-    pushScoreToDatabase(courtgamedata);
+    // pushScoreToDatabase(courtgamedata);
 
   }
 
@@ -699,6 +732,15 @@ function onConnection(socket) {
     playerteam = teamindex[data.player.team.name];
     // // // // // // // // console.log(playerteam);
     playerscore = data.player.score;
+
+    console.log('oldteamscores');
+    console.dir(teamscores);
+    oldteam = teamscores[data.player.team.name];
+    oldteam.score += playerscore;
+    teamscores[data.player.team.name] = oldteam;
+
+    console.log('newteamscores');
+    console.dir(teamscores);
 
     if (playerscore > 0) {
 
@@ -840,7 +882,7 @@ function onConnection(socket) {
       myzone = allzones[mydevice.zone];
 
       if (!myzone) {
-        myzone = 'UNKNOWN ZONE';
+        myzone = 'DEFAULT ZONE';
       }
 
       // // // // // // // // // console.log('court: ');
@@ -862,7 +904,7 @@ function onConnection(socket) {
         findACourt(mydevice, myzone);
       }
     } else { //unknown device
-      // // // // // // // // console.log('device: ' + deviceIP + ' not in alldevices list');
+      console.log('device: ' + deviceIP + ' not in alldevices list');
       getDataFromAirtable();
       unknownDevice(deviceIP);
     }
@@ -1020,31 +1062,6 @@ function onConnection(socket) {
     // // console.log('game almost ready');
     socket.broadcast.to(socket.roomname).emit('game almost ready', gamedata);
   }
-  // function updateGameName(newgamename) {
-  //   // console.log('update game name called: ' + newgamename);
-  //   console.log('---Step 3---');
-  //   console.log('gamename before update: ' + thisgamesroom.gamename);
-  //   var thisgamesroom = roomnames[socket.roomname];
-  //
-  //   thisgamesroom.gamename = newgamename;
-  //
-  //   console.log('gamename after update: ' + thisgamesroom.gamename);
-  //
-  //   roomnames[socket.roomname] = thisgamesroom;
-  //   allrooms[thisgamesroom.id] = thisgamesroom;
-  //   socket.broadcast.to(socket.roomname).emit('update game name', newgamename);
-  // }
-  // socket.on('update game name', function(newgamename) {
-  //   // console.log('update game name from socket - ' + socket.gamename);
-  //
-  //   var thisgamesroom = roomnames[socket.roomname];
-  //
-  //   thisgamesroom.gamename = newgamename;
-  //
-  //   roomnames[socket.roomname] = thisgamesroom;
-  //   allrooms[thisgamesroom.id] = thisgamesroom;
-  //
-  // });
 
   socket.on('throw ball', function(data) {
     // // // // // // // // // console.log('Full Data - ' + data);
@@ -1123,8 +1140,10 @@ function onConnection(socket) {
   });
 
   socket.on('sync screens', function(data) {
-     //// // // // // console.log('Sync Data test');
-     //// // // // console.dir(data);
+    //// // // // // console.log('Sync Data test');
+
+    //// // // // console.dir(data);
+
     socket.syncdata = data;
 
     if (socket.court) {
@@ -1258,7 +1277,54 @@ function onConnection(socket) {
     socket.disconnect();
   });
 
+
+  // function updateGameName(newgamename) {
+  //   // console.log('update game name called: ' + newgamename);
+  //   console.log('---Step 3---');
+  //   console.log('gamename before update: ' + thisgamesroom.gamename);
+  //   var thisgamesroom = roomnames[socket.roomname];
+  //
+  //   thisgamesroom.gamename = newgamename;
+  //
+  //   console.log('gamename after update: ' + thisgamesroom.gamename);
+  //
+  //   roomnames[socket.roomname] = thisgamesroom;
+  //   allrooms[thisgamesroom.id] = thisgamesroom;
+  //   socket.broadcast.to(socket.roomname).emit('update game name', newgamename);
+  // }
+  // socket.on('update game name', function(newgamename) {
+  //   // console.log('update game name from socket - ' + socket.gamename);
+  //
+  //   var thisgamesroom = roomnames[socket.roomname];
+  //
+  //   thisgamesroom.gamename = newgamename;
+  //
+  //   roomnames[socket.roomname] = thisgamesroom;
+  //   allrooms[thisgamesroom.id] = thisgamesroom;
+  //
+  // });
+
 }
+
+function sendToSpecificSocket(socketID)
+{
+  console.log("SEND TO SPECIFIC MASTER " + socketID);
+  io.to(socketID).emit('set master');
+}
+
+io.on('connection', onConnection);
+
+server.listen(port, function(){
+  console.log('listening on %d', port);
+});
+
+
+
+
+
+
+
+
 
 
 
@@ -1370,16 +1436,3 @@ function onConnection(socket) {
     // });
 
 // Ready to delete finished
-
-function sendToSpecificSocket(socketID)
-{
-    // // // console.log("SEND TO SPECIFIC MASTER " + socketID);
-    io.to(socketID).emit('set master');
-}
-
-
-io.on('connection', onConnection);
-
-server.listen(port, function(){
-  // // // // // // // console.log('listening on %d', port);
-});
