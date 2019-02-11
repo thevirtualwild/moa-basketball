@@ -378,12 +378,10 @@ function onConnection(socket) {
   }
   function findACourt(mydevice, myzone) {
     //if device is not a part of a court
-    // // // // // // // // // console.log('Please add device: ' + mydevice.ipaddress + ' to a court');
-    // // // // // // // console.dir(mydevice);
-
     //check zone of device for list of currently configured courts, and add to court based on location
-    // // // // // // // // // console.log('device in zone: ' + myzone.name);
-    // // // // // // // console.dir(myzone);
+
+    // current courtnum
+    console.log('current courtnum: ' + courtnum);
     courtnum = randomcourts + 1;
 
     if (myzone.configuration) {
@@ -392,13 +390,9 @@ function onConnection(socket) {
     } else {
       console.log('findACourt: no configuration');
     }
-    //
-    // // // // // // // // // console.log('config data');
-    // // // // // // // console.dir(zoneconfig);
-
 
     if (courtnum) {
-      // // // // // // // // console.log('I should be in court #' + courtnum);
+      console.log('I should be in court #' + courtnum);
       var mycourt;
 
       var index = courtnum - 1;
@@ -406,13 +400,13 @@ function onConnection(socket) {
         mycourt = allcourts[myzone.courts[index]];
       }
       if (mycourt) {
-        // // // // // // // // console.log('try court - ' + mycourt);
+        console.log('try court - ' + mycourt);
         console.log('adding court to device');
         console.dir(mycourt);
         mydevice.court = mycourt;
         findARoom(mycourt,mydevice);
       } else {
-        // // // // // // // // console.log('no court yet');
+        console.log('no court yet');
         createCourt(mydevice,myzone);
       }
     } else {
@@ -882,22 +876,17 @@ function onConnection(socket) {
         myzone = 'DEFAULT ZONE';
       }
 
-      // // // // // // // // // console.log('court: ');
-      // // // // // // // console.dir(mycourt);
       if (mycourt) {
         //if we know the court the device should be in, check if we know the room
         myroom = mycourt.room;
         myroomid = myroom;
         if (myroom) {
           //if mycourt already knows what room it is supposed to be a part of
-          // // // // // // // // console.log('myroom assign');
           assignCourtToRoom(mycourt,myroomid);
         } else { //find a room
-          // // // // // // // // console.log('court: ' + mycourt.name + ' and device: ' + mydevice.ipaddress + ' need a room');
           findARoom(mycourt,mydevice);
         }
       } else { //find a court
-        // // // // // // // // console.log('No court found for device: ' + mydevice.ipaddress + ' in zone: ' + myzone.name);
         findACourt(mydevice, myzone);
       }
     } else { //unknown device
