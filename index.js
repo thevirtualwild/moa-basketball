@@ -23,9 +23,6 @@ var allconfigs = {};
 var courtnames = {};
 var roomnames = {};
 
-
-// console.dir(config_base);
-
 var connectedcourts = {};
 
 function getDataFromAirtable() {
@@ -198,7 +195,7 @@ function getScoresFromAirtable() {
   });
 }
 
-// getScoresFromAirtable();
+getScoresFromAirtable();
 
 // Routing
 app.use(express.static(path.join(__dirname, 'public')), function(req, res) {
@@ -730,7 +727,7 @@ function onConnection(socket) {
   function pushScoreToDatabase(data) {
     playername = data.player.username;
     playerteam = teamindex[data.player.team.name];
-    // // // // // // // // console.log(playerteam);
+
     playerscore = data.player.score;
 
     console.log('oldteamscores');
