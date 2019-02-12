@@ -379,7 +379,7 @@ function onConnection(socket) {
 
     // current courtnum
     console.log('FINDACOURT: current courtnum - ' + courtnum);
-    courtnum = randomcourts + 1;
+    courtnum = courtnum + 1;
 
     if (myzone.configuration) {
       zoneconfig = allconfigs[myzone.configuration];
