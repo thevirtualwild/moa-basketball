@@ -1484,6 +1484,7 @@ function getMyIP() {
   };
 }
 
+// do we need this function of should getMyIP just call checkMyDeviceInfo?
 function showCourt(someIP) {
   checkMyDeviceInfo(someIP);
 }

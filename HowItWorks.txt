@@ -1,0 +1,16 @@
+*Server Initialization *
+
+
+* Court Started *
+- socket.on('connect') calls 'getMyIP' [court]
+  - runs a function that gets computer IP address, and then calls 'showCourt'
+- showCourt immediately calls getDeviceInfo [court]
+  - this sets up device data and sends socket.emit('court connected')
+- socket.on('courtconnected') [server]
+  - Store DeviceIP to socket
+  - set socket.devicetype to 'court'
+  - calls 'checkForKnownDevice'
+-
+  - calls 'getCourtToShow'
+- on getCourtToShow
+  - if device is known, calls 'unknownDevice,

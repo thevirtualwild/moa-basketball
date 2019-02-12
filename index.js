@@ -23,10 +23,10 @@ var allconfigs = {};
 var courtnames = {};
 var roomnames = {};
 
-var connectedcourts = {};
+var connectedcourtdevices = {};
 
 function getDataFromAirtable() {
-  console.log('gettingDataFromAirtable');
+  // console.log('gettingDataFromAirtable');
 
   function getDevices() {
     config_base('Devices').select({}).eachPage(function page(records, fetchNextPage) {
@@ -49,8 +49,8 @@ function getDataFromAirtable() {
     }, function done(err) {
       if (err) { console.error(err); console.log('getDevices error'); return; }
 
-      console.log('getDevices complete:');
-      console.log(alldevices);
+      // console.log('getDevices complete:');
+      // console.log(alldevices);
     });
   }
   function getRooms() {
@@ -76,8 +76,8 @@ function getDataFromAirtable() {
     }, function done(err) {
       if (err) { console.error(err); console.log('getRooms error'); return; }
 
-      console.log('getRooms complete:');
-      console.log(allrooms);
+      // console.log('getRooms complete:');
+      // console.log(allrooms);
     });
   }
   function getZones() {
@@ -105,8 +105,8 @@ function getDataFromAirtable() {
     }, function done(err) {
       if (err) { console.error(err); console.log('getZones error'); return; }
 
-      console.log('getZones complete:');
-      console.log(allzones);
+      // console.log('getZones complete:');
+      // console.log(allzones);
     });
   }
   function getCourts() {
@@ -189,9 +189,9 @@ function getScoresFromAirtable() {
   }, function done(err) {
     if (err) { console.error(err); return; }
 
-    console.dir(allteams);
-    console.log('teamindex:');
-    console.dir(teamindex);
+    // console.dir(allteams);
+    // console.log('teamindex:');
+    // console.dir(teamindex);
   });
 }
 
@@ -346,53 +346,50 @@ function onConnection(socket) {
     zoneid = somedevice.zone;
     thiszone = allzones[zoneid];
 
-    // console.log('thiszone' + zoneid);
-    // console.dir(thiszone);
+    console.log('thiszone' + zoneid);
+    console.dir(thiszone);
 
     if (thiszone.rooms) {
       console.log('thiszone.rooms');
       console.dir(thiszone.rooms);
       roomid = thiszone.rooms[0];
-      // // // // // // // // // console.log('findaroom assign');
-      // // // // // // // console.dir(somecourt);
 
       somecourt['room'] = [roomid];
       allcourts[somecourt.id] = somecourt;
       courtnames[somecourt.name] = somecourt;
 
-      // console.log('somecourt');
-      // console.dir(somecourt);
-
-      // config_base('Courts').update(somecourt.id, {
-      //   "Room": [ somecourt.room ]
-      // }, function(err, record) {
-      //     if (err) { console.error(err); return; }
-      //     console.log('room - ' + record.get('Room'));
-      // });
+      console.log('somecourt');
+      console.dir(somecourt);
+      console.log('somecourt.room - ' + somecourt.room);
+      config_base('Courts').update(somecourt.id, {
+        "Room": somecourt.room
+      }, function(err, record) {
+          if (err) { console.error(err); return; }
+          console.log('room - ' + record.get('Room'));
+      });
 
       assignCourtToRoom(somecourt, roomid);
     } else {
       somecourt.room = createRoom(somecourt);
-      // // // // // // // // // console.log(somecourt);
     }
   }
   function findACourt(mydevice, myzone) {
     //if device is not a part of a court
-    //check zone of device for list of currently configured courts, and add to court based on location
+    //check zone of device for list of currently configured courts, and add to court based on device location
 
     // current courtnum
-    console.log('current courtnum: ' + courtnum);
+    console.log('FINDACOURT: current courtnum - ' + courtnum);
     courtnum = randomcourts + 1;
 
     if (myzone.configuration) {
       zoneconfig = allconfigs[myzone.configuration];
       courtnum = zoneconfig[mydevice.location];
     } else {
-      console.log('findACourt: no configuration');
+      // console.log('FINDACOURT: ' + myzone.id + ' - no configuration');
     }
 
     if (courtnum) {
-      console.log('I should be in court #' + courtnum);
+      console.log('FINDACOURT: ' + mydevice.ipaddress + ' - should be in court #' + courtnum);
       var mycourt;
 
       var index = courtnum - 1;
@@ -400,13 +397,25 @@ function onConnection(socket) {
         mycourt = allcourts[myzone.courts[index]];
       }
       if (mycourt) {
-        console.log('try court - ' + mycourt);
-        console.log('adding court to device');
+        console.log('FINDACOURT: adding court to device [' + mydevice.ipaddress + ']');
         console.dir(mycourt);
         mydevice.court = mycourt;
+
+        console.log('FINDACOURT: deviceinfo');
+        console.dir(mydevice);
+
+        mydeviceid = mydevice.id;
+
+        config_base('Devices').update( mydevice.id, {
+          "Court": [mydevice.court.id]
+        }, function(err, record) {
+            if (err) { console.error(err); return; }
+            console.log('UpdateDevice ' + mydevice.id + ' with new court - ' + record.get('Court'));
+        });
+
         findARoom(mycourt,mydevice);
       } else {
-        console.log('no court yet');
+        console.log('FINDACOURT: need to create a new court for device [' + mydevice.ipaddress + ']');
         createCourt(mydevice,myzone);
       }
     } else {
@@ -417,11 +426,10 @@ function onConnection(socket) {
       alldevices[mydevice.ipaddress] = mydevice;
       findARoom(mycourt,mydevice);
     }
+
   }
   function unknownDevice(deviceIP) {
-    //if device is not a part of alldevices
-    // // // // // // // // console.log('Unknown device: ' + deviceIP + ' trying to set up a court');
-
+    //if device is not a part of alldevices create a new device
     var newdevice = {
       ipaddress: deviceIP,
       location: 'UNKNOWN LOCATION',
@@ -431,21 +439,21 @@ function onConnection(socket) {
     // add device to list of devices
     alldevices[deviceIP] = newdevice;
     var devicezone = allzones[newdevice.zone];
+    //redundant? // allzones[newdevice.zone] = devicezone;
 
-    // console.log('allzones');
-    // console.dir(allzones);
-
-    allzones[newdevice.zone] = devicezone;
     if(devicezone) {
       if (devicezone.devices) {
+        // if zone already has devices add to existing array
         devicezone.devices.push(newdevice);
       } else {
+        // if zone doesn't have any devices, create new array of devices
         devicezone.devices = [newdevice];
       }
     } else {
-
+      // if no zones exist, we could possibly create a new default zone here, but we really shouldn't be running this if we dont have any zones
     }
-    //update record in allzones
+
+    // record in allzones is updated on devices.push
 
     // PUSH TO AIRTABLE HERE
     config_base('Devices').create({
@@ -464,31 +472,20 @@ function onConnection(socket) {
         // do something to update local storage
         alldevices[newdevice.ipaddress] = newdevice;
 
-
-        //use a random court
-        console.log('randomcourt- devicezone:');
-        console.dir(devicezone);
+        // find a court to use for this device
+        // console.log('UNKOWNDEVICE: push new device before finding a court - ');
+        // console.dir(newdevice);
         findACourt(newdevice, devicezone);
     });
   }
 
   function joinCourt(somecourtname) {
-    // // // // // // // // console.log('player needs to join court: ' + somecourtname);
-    // // // // // // // console.log('courtnames - ');
-    // // // // // // console.dir(courtnames);
 
     var courttojoin = courtnames[somecourtname];
-    // // // // // // // console.log('full court info: ');
-    // // // // // // console.dir(courttojoin);
 
     if (courttojoin) {
 
-      // // // // // console.log('DEBUG: courttojoin:');
-      // // // // console.dir(courttojoin)
       var roomcourtisapartof = allrooms[courttojoin.room];
-
-      // // // // // console.log('DEBUG: roomcourt:');
-      // // // // console.dir(roomcourtisapartof);
 
       gamestarted = roomcourtisapartof.gamerunning;
       canjoingame = roomcourtisapartof.canjoingame;
@@ -539,7 +536,7 @@ function onConnection(socket) {
     var newcourtname = randomCode(5);
     var courtorder;
     if (somezone.courts) {
-      courtorder = somezone.courts.length;
+      courtorder = somezone.courts.length + 1;
     } else {
       courtorder = 1;
     }
@@ -555,8 +552,6 @@ function onConnection(socket) {
 
         //Callback from API push
         newcourtid = record.getId();
-        // // // // // // // // console.log('NewCourt - ' + newcourtid);
-
 
         // do something to update local storage
         newcourt = {
@@ -571,7 +566,6 @@ function onConnection(socket) {
         somedevice.court = newcourt;
         alldevices[somedevice.ipaddress] = somedevice;
 
-        // // // // // // // // console.log('find a room court: ' + newcourt.name + ' device: ' + somedevice.ipaddress);
         findARoom(newcourt,somedevice);
     });
   }
@@ -858,13 +852,22 @@ function onConnection(socket) {
 
   }
 
+
+
+  function checkForKnownDevice(deviceIP) {
+    if (deviceIP in alldevices) {
+      console.log('we know this device already.');
+    } else {
+      console.log('device: ' + deviceIP + ' not in alldevices list');
+      getDataFromAirtable();
+      unknownDevice(deviceIP);
+    }
+  }
+
   //court stuff I think
   function getCourtToShow(deviceIP) {
-    // we know this is a court, so tell the Socket
-    socket.devicetype = 'court';
 
     // find out if the device knows what court it should be a part of
-
     // first check to see if device is in list of devices
     if (deviceIP in alldevices) {
       //if we know the device already, check its court and zone,
@@ -873,14 +876,16 @@ function onConnection(socket) {
       myzone = allzones[mydevice.zone];
 
       if (!myzone) {
+        // if we don't have a zone set in config, set zone to the default
         myzone = 'DEFAULT ZONE';
       }
 
       if (mycourt) {
-        //if we know the court the device should be in, check if we know the room
-        myroom = mycourt.room;
-        myroomid = myroom;
-        if (myroom) {
+        console.log('COURT TO SHOW: ');
+        console.dir(mycourt);
+        //if we know the court the device should be in, check if we know the roomid
+        myroomid = mycourt.room;
+        if (myroomid) {
           //if mycourt already knows what room it is supposed to be a part of
           assignCourtToRoom(mycourt,myroomid);
         } else { //find a room
@@ -895,6 +900,45 @@ function onConnection(socket) {
       unknownDevice(deviceIP);
     }
   };
+
+  // sent from court.js in "getDeviceInfo"
+  socket.on('court connected', function(data) {
+    // store device IP and save it to socket
+    var deviceIP = data.deviceIP;
+    socket.deviceIP = deviceIP;
+
+    // we know this is a court, so tell the Socket
+    socket.devicetype = 'court';
+
+    if (!connectedcourtdevices[deviceIP]) {
+      // console.log('CONNECTION: court connected for the first time');
+      // when court has connected, save it to the courts dictionary
+      connectedcourtdevices[deviceIP] = data;
+    } else {
+      //court has already connected (this is probably a reconnect)
+      var courtinfo = connectedcourtdevices[deviceIP];
+      // console.log('CONNECTION: court reconnected [IP: ' + deviceIP + ' , SOCKET: ' + socket.id + ']');
+
+      socket.emit('court reconnected', courtinfo);
+
+      if(socket.court === undefined) {
+        console.log("COURT CONNECTION: unknown court");
+        getCourtToShow(deviceIP);
+      }
+      else{
+        console.log("COURT CONNECTION: socket already knows court, calling setSocketMaster");
+        setSocketMaster();
+      }
+    }
+
+    getCourtToShow(deviceIP);
+  });
+
+
+
+
+
+
 
   socket.on('update court', function(courtdata) { //court joins new room
     // // // // // // // // console.log('updating court');
@@ -961,17 +1005,6 @@ function onConnection(socket) {
     socket.broadcast.to(socket.roomname).emit('player changed name', data);
   })
 
-
-  //game stuff
-  // socket.on('start countdown', function(courtName) {
-  //   if (!gamesrunning) {
-  //    gamesrunning = true;
-  //    // // // // // // // // console.log('countdown started by - ' + courtName);
-  //    socket.broadcast.to(socket.roomname).emit('start countdown', courtName);
-  //   } else {
-  //    // // // // // // // // console.log('countdown already running')
-  //   }
-  // });
 
   socket.on('game almost ready', function(courtName) {
     // console.log('Game Almost Ready Called by - ' + courtName);
@@ -1225,44 +1258,22 @@ function onConnection(socket) {
     // // // // // // console.dir(data);
   });
 
-  socket.on('court connected', function(data) {
-    var deviceIP = data.deviceIP;
-    socket.deviceIP = data.deviceIP;
-
-    // // // // // console.log(alldevices[socket.deviceIP]);
-
-    // // // // // // console.log('court connected: ip-' + deviceIP);
-    //when court has connected, save it to the courts dictionary
-
-    if (connectedcourts[deviceIP]) {
-      var courtinfo = connectedcourts[deviceIP];
-      //court has already connected
-      // // // // // console.log('CONNECTION: court reconnecting');
-      socket.emit('court reconnected', courtinfo);
-      // // // console.log("DEVICE IP" + deviceIP + " socketid " + socket.id);
-      if(socket.court === undefined) {
-          getCourtToShow(deviceIP);
-          // // // console.log("UNKNOWN DEVICE");
-      }
-      else{
-          setSocketMaster();
-      }
-
-    } else {
-      // // // // // console.log('CONNECTION: court connected for the first time');
-      connectedcourts[deviceIP] = data;
-    }
-
-    // // // // // console.log('connected courts at ip');
-    // // // // console.dir(connectedcourts[deviceIP]);
-
-    getCourtToShow(deviceIP);
-  });
-
   socket.on('disconnect this device', function() { // called from player
     socket.disconnect();
   });
 
+
+
+  //game stuff
+  // socket.on('start countdown', function(courtName) {
+  //   if (!gamesrunning) {
+  //    gamesrunning = true;
+  //    // // // // // // // // console.log('countdown started by - ' + courtName);
+  //    socket.broadcast.to(socket.roomname).emit('start countdown', courtName);
+  //   } else {
+  //    // // // // // // // // console.log('countdown already running')
+  //   }
+  // });
 
   // function updateGameName(newgamename) {
   //   // console.log('update game name called: ' + newgamename);
