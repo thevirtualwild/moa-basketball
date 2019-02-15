@@ -15,13 +15,15 @@ Airtable.configure({
 var config_base = Airtable.base('appGEyxfx4sS75CnX');
 var score_base = Airtable.base('appaAVPwTAeL1m1tu');
 
-var alldevices = {};
-var allrooms = {};
-var allzones = {};
-var allcourts = {};
-var allconfigs = {};
-var courtnames = {};
-var roomnames = {};
+var alldevices = {},
+    allrooms = {},
+    allzones = {},
+    allcourts = {},
+    allconfigs = {},
+    courtnames = {},
+    roomnames = {};
+
+var USEMASTERSLAVEMODE = true;
 
 var connectedcourtdevices = {};
 
@@ -233,9 +235,7 @@ var gamesplayed = {};
 
 // Web Socket (Socket.io)
 function onConnection(socket) {
-
   console.log('new connection - ' + socket.id);
-  // var gamenum = 1;
 
   var currentHighScore = {
     player: 'none',
@@ -245,102 +245,6 @@ function onConnection(socket) {
 
   var addedUser = false;
   var gamesrunning;
-
-  function setSocketMaster() {
-    // // // console.log('--setting socket master')
-    // // // // // // // console.log('socket court');
-    // // // // // // console.dir(socket.court);
-      if(socket.court === undefined)
-      {
-          // // // console.log("UNKNOWN DEVICe");
-          // // // console.log(socket.deviceIP);
-          //unknownDevice(socket.deviceIP);
-          //return;
-          // // // console.log(socket.court);
-      }
-
-    var courtid = socket.court.id;
-    // // // console.log('socket.court.id: ' + courtid);
-    var thiscourt = courtsandmaster[courtid];
-    // // // console.log('this court - ');
-    // // // console.dir(thiscourt);
-
-    if (thiscourt) {
-      // // // console.log('court is listed - ');
-      // // // // // // console.dir(thiscourt);
-      // // // // // // // console.log('court master: ' + thiscourt.master);
-
-      if (thiscourt.master === undefined) {
-        // // // console.log('master undefined: ' + thiscourt.master + " " + socket.id);
-        thiscourt.master = socket.id;
-        socket.court.master = socket.id;
-        // // // console.log('thiscourt master: ');
-        // // console.dir(thiscourt);
-        thiscourt.slaves = [];
-        courtsandmaster[courtid] = thiscourt;
-        // // // console.log('candm:');
-        // // console.dir(courtsandmaster);
-        socket.emit('set master');
-
-      } else if (thiscourt.master) {
-        //// // // console.log('court has master: ' + thiscourt.master);
-          if(thiscourt.master == socket.id){
-              // // // console.log("SOCKET ALREADY MASTER");
-          }
-          else {
-              thiscourt.slaves.push(socket.id);
-              // // // console.log("SOCKET IS SLAVE PUSHING");
-          }
-
-        courtsandmaster[courtid] = thiscourt;
-        //// // // console.log("this court: " + thiscourt);
-          //// // // // // console.log("this court master: " + thiscourt.master);
-          // // // console.log("MIDDLE IF " + thiscourt.master);
-          // // // console.log(socket.court.master);
-          socket.court.master = thiscourt.master;
-          //was socket.id
-          sendToSpecificSocket(socket.court.master);
-          //io.to(thiscourt.master).emit('set master');
-      } else {
-          // // // console.log("LAST IF " + socket.id);
-        thiscourt.master = socket.id;
-        socket.court.master = socket.id;
-        // // // console.log('thiscourt master: ');
-        // // // console.dir(thiscourt);
-        thiscourt.slaves = [];
-        courtsandmaster[courtid] = thiscourt;
-        socket.emit('set master');
-      }
-    } else {
-      // // // console.log('Court not listed - add court to list and set master to this socket');
-      thiscourt = {
-        id: courtid,
-        master: socket.id
-      };
-
-      //courtsandmaster[courtid] = thiscourt;
-      // // // console.log(courtsandmaster[courtid]);
-      // // // console.dir(thiscourt);
-      // // // // console.log('candm list: ');
-      // // // console.dir(courtsandmaster);
-
-        // // // console.log("END OF SOCKET " + socket.id);
-      //socket.court.master = socket.id;
-      // // // console.log("SYNC DATA " + socket.syncdata);
-      //syncSlaves(socket.syncdata);
-      // // // console.log('setting this socket to master:' + socket.court.master);
-      //socket.hasmaster = true;
-      //socket.emit('set master');
-    }
-
-    // if (masters[socket.court.id]) {
-    //   socket.master = masters[socket.court.id];
-    // } else {
-    //   socket.master = socket.id;
-    //   masters[socket.court] = socket.id;
-    //   socket.emit('set master');
-    // }
-  }
 
   function findARoom(somecourt, somedevice) {
     zoneid = somedevice.zone;
@@ -610,27 +514,23 @@ function onConnection(socket) {
 
     socket.roomname = fullroomdata.name;
     socket.court = somecourt;
-    // // // // // // // console.log('socket.court.id: ' + socket.court.id);
-    // // // // // // // console.log('socket court');
-    // // // // // // console.dir(courtsandmaster[socket.court.id]);
-    // // // // // // console.log('assigning court - ' + socket.court);
-    courtsandmaster[socket.court.id] = socket.court;
-    // // // // // // // console.log('after');
-    // // // // // // console.dir(courtsandmaster[socket.court.id]);
-    // // // // // // // // console.log('socket room: '+ socket.room);
-    // // // // // // // // // console.log('room: ');
-    // // // // // // // console.dir(allrooms[someroom]);
-    if (!socket.hasmaster) {
-      socket.hasmaster = true;
-      court = courtsandmaster[socket.court.id];
-      court.slaves = [];
-      courtsandmaster[socket.court.id] = court;
-      // // // console.log('socket does not have master');
-      setSocketMaster();
-    }
-    if (socket.syncdata){
-      // // // // // // // console.log('calling syncslaves from assign court to room');
-      syncSlaves(socket.syncdata);
+
+    if (USEMASTERSLAVEMODE) {
+      courtsandmaster[socket.court.id] = socket.court;
+
+      if (!socket.hasmaster) {
+        socket.hasmaster = true;
+        court = courtsandmaster[socket.court.id];
+        court.slaves = [];
+        courtsandmaster[socket.court.id] = court;
+        // // // console.log('socket does not have master');
+        console.log('ASSIGNCOURTTOROOM: setsockettomaster');
+        setSocketMaster();
+      }
+      if (socket.syncdata){
+        // // // // // // // console.log('calling syncslaves from assign court to room');
+        syncSlaves(socket.syncdata);
+      }
     }
 
     if (somecourt.room) {
@@ -791,6 +691,105 @@ function onConnection(socket) {
 
   }
 
+
+
+  // only needed if USEMASTERSLAVEMODE
+  function setSocketMaster() {
+    // // // console.log('--setting socket master')
+    // // // // // // // console.log('socket court');
+    // // // // // // console.dir(socket.court);
+    if(socket.court === undefined)
+    {
+        // // // console.log("UNKNOWN DEVICe");
+        // // // console.log(socket.deviceIP);
+        //unknownDevice(socket.deviceIP);
+        //return;
+        // // // console.log(socket.court);
+    }
+
+    var courtid = socket.court.id;
+    // // // console.log('socket.court.id: ' + courtid);
+    var thiscourt = courtsandmaster[courtid];
+    // // // console.log('this court - ');
+    // // // console.dir(thiscourt);
+
+    if (thiscourt) {
+      // // // console.log('court is listed - ');
+      // // // // // // console.dir(thiscourt);
+      // // // // // // // console.log('court master: ' + thiscourt.master);
+
+      if (thiscourt.master === undefined) {
+        // // // console.log('master undefined: ' + thiscourt.master + " " + socket.id);
+        thiscourt.master = socket.id;
+        socket.court.master = socket.id;
+        // // // console.log('thiscourt master: ');
+        // // console.dir(thiscourt);
+        thiscourt.slaves = [];
+        courtsandmaster[courtid] = thiscourt;
+        // // // console.log('candm:');
+        // // console.dir(courtsandmaster);
+        console.log('SETSOCKETMASTER: set master emitted to master socket (should be only court)');
+        socket.emit('set master'); //do we need this?
+
+      } else if (thiscourt.master) {
+        //// // // console.log('court has master: ' + thiscourt.master);
+        if(thiscourt.master == socket.id){
+            // // // console.log("SOCKET ALREADY MASTER");
+        }
+        else {
+            thiscourt.slaves.push(socket.id);
+            // // // console.log("SOCKET IS SLAVE PUSHING");
+        }
+
+        courtsandmaster[courtid] = thiscourt;
+        //// // // console.log("this court: " + thiscourt);
+        //// // // // // console.log("this court master: " + thiscourt.master);
+        // // // console.log("MIDDLE IF " + thiscourt.master);
+        // // // console.log(socket.court.master);
+        socket.court.master = thiscourt.master;
+        //was socket.id
+        sendToSpecificSocket(socket.court.master);
+        //io.to(thiscourt.master).emit('set master');
+      } else {
+        // // // console.log("LAST IF " + socket.id);
+        thiscourt.master = socket.id;
+        socket.court.master = socket.id;
+        // // // console.log('thiscourt master: ');
+        // // // console.dir(thiscourt);
+        thiscourt.slaves = [];
+        courtsandmaster[courtid] = thiscourt;
+        socket.emit('set master');
+      }
+    } else {
+      // // // console.log('Court not listed - add court to list and set master to this socket');
+      thiscourt = {
+        id: courtid,
+        master: socket.id
+      };
+
+      //courtsandmaster[courtid] = thiscourt;
+      // // // console.log(courtsandmaster[courtid]);
+      // // // console.dir(thiscourt);
+      // // // // console.log('candm list: ');
+      // // // console.dir(courtsandmaster);
+
+        // // // console.log("END OF SOCKET " + socket.id);
+      //socket.court.master = socket.id;
+      // // // console.log("SYNC DATA " + socket.syncdata);
+      //syncSlaves(socket.syncdata);
+      // // // console.log('setting this socket to master:' + socket.court.master);
+      //socket.hasmaster = true;
+      //socket.emit('set master');
+    }
+
+    // if (masters[socket.court.id]) {
+    //   socket.master = masters[socket.court.id];
+    // } else {
+    //   socket.master = socket.id;
+    //   masters[socket.court] = socket.id;
+    //   socket.emit('set master');
+    // }
+  }
   function syncSlaves(data) {
     // // // // console.log("---SYNC SLAVES---");
     // // // // console.log('   data sent in');
@@ -822,8 +821,6 @@ function onConnection(socket) {
       setSocketMaster();
     }
   }
-
-
   function findNewMaster(oldsocketid) {
     //var slaveindex = court.slaves.indexOf(socket.id);
 
@@ -851,7 +848,25 @@ function onConnection(socket) {
     }
 
   }
+  function sendToSpecificSocket(socketID) {
+    console.log("SEND TO SPECIFIC MASTER " + socketID);
+    io.to(socketID).emit('set master');
+  }
 
+  socket.on('sync screens', function(data) {
+    socket.syncdata = data;
+    if (socket.court) {
+      if (USEMASTERSLAVEMODE) {
+        syncSlaves(data);
+      }
+    } else {
+      // If the socket this device has not already connected and learned its court, it needs to find it
+      mydevice = alldevices[data.deviceIP];
+      myzone = allzones[mydevice.zone];
+      findACourt(mydevice,myzone);
+    }
+  });
+  // end of USEMASTERSLAVEMODE functions
 
 
   function checkForKnownDevice(deviceIP) {
@@ -904,6 +919,7 @@ function onConnection(socket) {
   // sent from court.js in "getDeviceInfo"
   socket.on('court connected', function(data) {
     // store device IP and save it to socket
+
     var deviceIP = data.deviceIP;
     socket.deviceIP = deviceIP;
 
@@ -911,7 +927,7 @@ function onConnection(socket) {
     socket.devicetype = 'court';
 
     if (!connectedcourtdevices[deviceIP]) {
-      // console.log('CONNECTION: court connected for the first time');
+      console.log('CONNECTION: court connected for the first time');
       // when court has connected, save it to the courts dictionary
       connectedcourtdevices[deviceIP] = data;
     } else {
@@ -1158,35 +1174,6 @@ function onConnection(socket) {
     courtnames[somecourtname] = thiscourt;
   });
 
-  socket.on('sync screens', function(data) {
-    //// // // // // console.log('Sync Data test');
-
-    //// // // // console.dir(data);
-
-    socket.syncdata = data;
-
-    if (socket.court) {
-      var thiscourt = courtsandmaster[socket.court.id];
-       //// // // // // console.log('thiscourt - '+ thiscourt);
-
-       //// // // // // console.log('thiscourt from sync screens: ');
-       //// // // // console.dir(thiscourt);
-
-      syncSlaves(data);
-    } else {
-      // // // console.log('no socket.court: ');
-      // // // console.dir(data);
-      // // // // // console.log('deviceIP ' + data.deviceIP);
-      mydevice = alldevices[data.deviceIP];
-      //// // // // // console.log('mydevice - ');
-      //// // // // console.dir(mydevice);
-      // mycourt = allcourts[mydevice.court];
-      myzone = allzones[mydevice.zone];
-      // // // // // console.log('cant find court');
-      findACourt(mydevice,myzone);
-    }
-  });
-
   function courtDisconnected(somesocket) {
 
       var thisgamesroom = roomnames[somesocket.roomname];
@@ -1208,24 +1195,26 @@ function onConnection(socket) {
 
       socket.emit('reset game');
       socket.broadcast.to(somesocket.roomname).emit('reset game');
-      //COURT WAS NULL
-        // // // console.log("CHECKING IF WE FIND NEW MASTER " + court.master + " " + socket.id);
-      if (court.master == socket.id) {
-        // // // // // // console.log('need to find new master - ');
-        // // // // // console.dir(socket.court);
-        // // // // // // console.log('current courtsandmaster');
-        // // // // // console.dir(courtsandmaster);
 
-        findNewMaster(socket.id);
-      } else {
-        var slaveindex = court.slaves.indexOf(socket.id);
-        court.slaves.pop(slaveindex);
-        courtsandmaster[courtid] = court;
+      if(USEMASTERSLAVEMODE) {
 
-          // // // // // // console.log('court after pop');
-          // // // // // console.dir(court);
+        if (court.master == socket.id) {
+          // // // // // // console.log('need to find new master - ');
+          // // // // // console.dir(socket.court);
           // // // // // // console.log('current courtsandmaster');
           // // // // // console.dir(courtsandmaster);
+
+          findNewMaster(socket.id);
+        } else {
+          var slaveindex = court.slaves.indexOf(socket.id);
+          court.slaves.pop(slaveindex);
+          courtsandmaster[courtid] = court;
+
+            // // // // // // console.log('court after pop');
+            // // // // // console.dir(court);
+            // // // // // // console.log('current courtsandmaster');
+            // // // // // console.dir(courtsandmaster);
+        }
       }
     }
   }
@@ -1301,12 +1290,6 @@ function onConnection(socket) {
   //
   // });
 
-}
-
-function sendToSpecificSocket(socketID)
-{
-  console.log("SEND TO SPECIFIC MASTER " + socketID);
-  io.to(socketID).emit('set master');
 }
 
 io.on('connection', onConnection);

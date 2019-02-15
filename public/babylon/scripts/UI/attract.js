@@ -2,7 +2,6 @@ var textFadeTime = 0.25;
 
 var canvas = document.getElementById("canvas");
 
-
 var footerLeft = document.getElementById("footerLeft");
 var footerCenter = document.getElementById("footerCenter");
 var playNow= document.getElementById("playNow");
@@ -62,6 +61,7 @@ function UIAttractAnimateOut()
 
 function turnOnAttract()
 {
+
     attractLeftStep1.style.display = "inline";
     attractRightStep1.style.display = "inline";
     attractLeftStep2.style.display = "inline";

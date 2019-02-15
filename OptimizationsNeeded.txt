@@ -31,5 +31,12 @@ Syncing? (turn off for single device)
 Tech Doc for what each login needed
 
 
+Do we need to figure out a better way to create/sync with a court? Can new devices connect to an existing court, or should it always be a new court with a new device?
+
 UI
 - results screens
+
+
+
+
+sarah somehow got into the game at the wrong time, and then started another game without telling the other players

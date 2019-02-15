@@ -29,7 +29,15 @@ var currentLoadTime = 7;
 var netPhysicsDisabled = false;
 
 var hasCourt = false;
-var ISMASTER = false;
+
+var USEMASTERSLAVEMODE = true;
+var ISMASTER;
+if (USEMASTERSLAVEMODE) {
+  ISMASTER = false;
+} else {
+  ISMASTER = true;
+}
+
 var readyToSync = false;
 var masterData;
 //Game Variables?
@@ -81,7 +89,7 @@ var hasconnected = false;
 var reconnecting = false;
 var isconnected = false;
 
-var createScene = function(){
+function createScene() {
     var scene = new BABYLON.Scene(engine);
     var shotClockTextures = [10];
 
@@ -97,14 +105,11 @@ var createScene = function(){
     var initCameraFocus;
 
     if(useCannon) {
-        var physicsPlugin = new BABYLON.CannonJSPlugin(false, 1);
-        physicsPlugin.allowSleep = false;
-    }
-    else
-    {
-        var physicsPlugin = new BABYLON.OimoJSPlugin(5);
-        physicsPlugin.allowSleep = true;
-
+      var physicsPlugin = new BABYLON.CannonJSPlugin(false, 1);
+      physicsPlugin.allowSleep = false;
+    } else {
+      var physicsPlugin = new BABYLON.OimoJSPlugin(5);
+      physicsPlugin.allowSleep = true;
     }
 
     var gravityVector = new BABYLON.Vector3(0,-15.81, 0);
@@ -139,8 +144,7 @@ var createScene = function(){
 
     currentGameTime = initGameTime;
 
-    for(var i = 0; i < 10; i++)
-    {
+    for(var i = 0; i < 10; i++) {
         shotClockTextures[i] = new BABYLON.Texture("./assets/ShotClock/Alphas/Texture" + i + ".png", scene, false, false, 1, function()
         {
             if(shotClockTextures[0].hasAlpha == false)
@@ -152,8 +156,7 @@ var createScene = function(){
 
     changeGameState(gameStates.ATTRACT);
 
-    function changeGameState(gameState)
-    {
+    function changeGameState(gameState) {
         switch(gameState)
         {
             case gameStates.ATTRACT:
@@ -164,7 +167,7 @@ var createScene = function(){
                 lobbyStarted = false;
                 resetBallColor();
                 if(ISMASTER) {
-                    animateCamera();
+                  animateCamera();
                 }
                 updateUI();
                 combo = 0;
@@ -475,6 +478,7 @@ var createScene = function(){
                     {
                         if (currentGameState == gameStates.ATTRACT)
                         {
+                            // console.log('SCENELOADER TAKESHOTS DURING ATTRACT');
                             shotIndex = 0;
                             takeShot();
                         }
@@ -506,69 +510,73 @@ var createScene = function(){
             {
                 currentEmitTime = initEmitTime;
 
-                if(ISMASTER)
-                {
-                    if(myIP === undefined){
 
-                        console.log("IP IS UNDEFINED");
-                        return;
-                    }
+              if(ISMASTER)
+              {
+                if(myIP === undefined){
 
-                    var syncData = {
-                        deviceIP: myIP,
-                        cameraPosition: camera.position,
-                        gameTime: currentGameTime,
-                        waitTime: currentWaitTime,
-                        resultsTime: currentResultsTime,
-                        worldTime: worldtime,
-                        score: add1Point,
-                        combo: combo,
-                        comboIsBroken: ComboIsBroken,
-                        basketballs: [],
-                        netvertexes: [],
-                        shotindex: shotIndex,
-                        states: []
-                    }
-
-                    for(var i = 0; i < basketballs.length; i++) {
-                        var newbasketballvar = {
-                            posx: basketballs[i].position.x,
-                            posy: basketballs[i].position.y,
-                            posz: basketballs[i].position.z,
-                            rotx: basketballs[i].rotationQuaternion.x,
-                            roty: basketballs[i].rotationQuaternion.y,
-                            rotz: basketballs[i].rotationQuaternion.z,
-                            rotw: basketballs[i].rotationQuaternion.w
-                        }
-
-                        syncData['basketballs'].push(newbasketballvar);
-
-                        var state = basketballStates[i];
-                        syncData['states'].push(state);
-                    }
-
-                    for(var i = sphereAmount; i < 40; i++) {
-                        var newNetPosition = {
-                            posx: netSpheres[i].position.x,
-                            posy: netSpheres[i].position.y,
-                            posz: netSpheres[i].position.z
-                        }
-                        //console.log(newNetPosition);
-                        syncData['netvertexes'].push(newNetPosition);
-                    }
-
-                    if(hasCourt)
-                    {
-                        socket.emit("sync screens", syncData);
-                        if(add1Point == true){
-                            console.log(syncData.score);
-                            console.log("SENT BASKET MADE")
-                            add1Point = false;
-                        }
-
-                    }
-
+                    console.log("IP IS UNDEFINED");
+                    return;
                 }
+
+                var syncData = {
+                    deviceIP: myIP,
+                    cameraPosition: camera.position,
+                    gameTime: currentGameTime,
+                    waitTime: currentWaitTime,
+                    resultsTime: currentResultsTime,
+                    worldTime: worldtime,
+                    score: add1Point,
+                    combo: combo,
+                    comboIsBroken: ComboIsBroken,
+                    basketballs: [],
+                    netvertexes: [],
+                    shotindex: shotIndex,
+                    states: []
+                }
+
+                for(var i = 0; i < basketballs.length; i++) {
+                    var newbasketballvar = {
+                        posx: basketballs[i].position.x,
+                        posy: basketballs[i].position.y,
+                        posz: basketballs[i].position.z,
+                        rotx: basketballs[i].rotationQuaternion.x,
+                        roty: basketballs[i].rotationQuaternion.y,
+                        rotz: basketballs[i].rotationQuaternion.z,
+                        rotw: basketballs[i].rotationQuaternion.w
+                    }
+
+                    syncData['basketballs'].push(newbasketballvar);
+
+                    var state = basketballStates[i];
+                    syncData['states'].push(state);
+                }
+
+                for(var i = sphereAmount; i < 40; i++) {
+                    var newNetPosition = {
+                        posx: netSpheres[i].position.x,
+                        posy: netSpheres[i].position.y,
+                        posz: netSpheres[i].position.z
+                    }
+                    //console.log(newNetPosition);
+                    syncData['netvertexes'].push(newNetPosition);
+                }
+
+                if(hasCourt)
+                {
+                    // sync sockets
+                    if(USEMASTERSLAVEMODE) {
+                      socket.emit("sync screens", syncData);
+                    }
+                    if(add1Point == true){
+                        console.log(syncData.score);
+                        console.log("SENT BASKET MADE")
+                        add1Point = false;
+                    }
+                }
+
+
+              }
             }
 
         });
@@ -596,18 +604,24 @@ var createScene = function(){
                 if(masterData.score == true)
                 {
                     console.log("BASKET MADE RECEIVED");
-                    score++;
-                    addScore();
+                    // score++;
 
+                    if (combo < 2) {
+                      score = score + 2;
+                    }
                     if(combo >= 2)
                     {
+                      score = score + 2;
                         UIGameplayAnimateBadgeOn(combo);
                     }
 
                     if(combo >= 3)
                     {
-                        changeBallFX(true);
+                      score= score + 3;
+                      changeBallFX(true);
                     }
+
+                    addScore();
                     masterData.score = false;
                     //add1Point = false;
                 }
@@ -1053,64 +1067,65 @@ var createScene = function(){
     score = 0;
     var manager = new BABYLON.ActionManager(scene);
     scoreTrigger.actionManager = manager;
-var test;
 
-for(var i = 0; i < basketballs.length; i++) {
-    scoreTrigger.actionManager.registerAction(
-        new BABYLON.ExecuteCodeAction(
-            {
-                trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
-                parameter: basketballs[i]
-            },
-            function () {
-                if(currentGameState == gameStates.GAMEPLAY || currentGameState == gameStates.RESULTS)
+    var test;
+
+    for(var i = 0; i < basketballs.length; i++) {
+        scoreTrigger.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
                 {
-                    var idx = shotIndex-1;
-                    if(idx < 0) idx = 9;
+                    trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
+                    parameter: basketballs[i]
+                },
+                function () {
+                    if(currentGameState == gameStates.GAMEPLAY || currentGameState == gameStates.RESULTS)
+                    {
+                        var idx = shotIndex-1;
+                        if(idx < 0) idx = 9;
 
-                    if(basketballStates[idx] == 1) {
-                        basketballStates[idx] = 0;
-                        add1Point = true;
-                        //addScore();
+                        if(basketballStates[idx] == 1) {
+                            basketballStates[idx] = 0;
+                            add1Point = true;
+                            //addScore();
 
-                        /*
-                        if(combo >= 2)
-                        {
-                            UIGameplayAnimateBadgeOn(combo);
+                            /*
+                            if(combo >= 2)
+                            {
+                                UIGameplayAnimateBadgeOn(combo);
+                            }
+
+                            if(combo >= 3)
+                            {
+                                changeBallFX(true);
+                            }
+                            */
                         }
-
-                        if(combo >= 3)
-                        {
-                            changeBallFX(true);
-                        }
-                        */
                     }
                 }
-            }
-        )
-    );
-}
+            )
+        );
+    }
 
 
-var clothMat = new BABYLON.StandardMaterial("netMat", scene);
-clothMat.diffuseTexture = new BABYLON.Texture("./assets/Layout/Net.png", scene);
-clothMat.emissiveTexture = new BABYLON.Texture("./assets/Layout/Net.png", scene);
-clothMat.diffuseTexture.vScale = 4;
-clothMat.diffuseTexture.uScale = 4;
-clothMat.backFaceCulling = false;
-clothMat.diffuseTexture.hasAlpha = true;
+    var clothMat = new BABYLON.StandardMaterial("netMat", scene);
+    clothMat.diffuseTexture = new BABYLON.Texture("./assets/Layout/Net.png", scene);
+    clothMat.emissiveTexture = new BABYLON.Texture("./assets/Layout/Net.png", scene);
+    clothMat.diffuseTexture.vScale = 4;
+    clothMat.diffuseTexture.uScale = 4;
+    clothMat.backFaceCulling = false;
+    clothMat.diffuseTexture.hasAlpha = true;
 
-var net = BABYLON.Mesh.CreateGround("ground1", 1, 1, sphereAmount, scene, true);
+    var net = BABYLON.Mesh.CreateGround("ground1", 1, 1, sphereAmount, scene, true);
 
-var positions = net.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    var positions = net.getVerticesData(BABYLON.VertexBuffer.PositionKind);
 
-net.material = clothMat;
+    net.material = clothMat;
 
-var indices = net.getIndices();
-//524
-indices.splice(182, indices.length);
+    var indices = net.getIndices();
+    //524
+    indices.splice(182, indices.length);
 
-net.setIndices(indices, indices.length);
+    net.setIndices(indices, indices.length);
 
     var debugPos = [];
     var currentSphereVel;
@@ -1138,7 +1153,7 @@ net.setIndices(indices, indices.length);
         new BABYLON.ExecuteCodeAction(
             {
                 trigger: BABYLON.ActionManager.OnKeyUpTrigger,
-                additionalData: 'r'
+                additionalData: "takeShot"
             },
 
             function ()
@@ -1154,7 +1169,7 @@ net.setIndices(indices, indices.length);
         new BABYLON.ExecuteCodeAction(
             {
                 trigger: BABYLON.ActionManager.OnKeyUpTrigger,
-                additionalData: 't'
+                additionalData: "changeGameStateAttract"
             },
 
             function () {
@@ -1168,7 +1183,7 @@ net.setIndices(indices, indices.length);
         new BABYLON.ExecuteCodeAction(
             {
                 trigger: BABYLON.ActionManager.OnKeyUpTrigger,
-                additionalData: 'u'
+                additionalData: "changeGameStateWaiting"
             },
 
             function () {
@@ -1181,7 +1196,7 @@ net.setIndices(indices, indices.length);
         new BABYLON.ExecuteCodeAction(
             {
                 trigger: BABYLON.ActionManager.OnKeyUpTrigger,
-                additionalData: 'p'
+                additionalData: "animateaction"
             },
 
             function () {
@@ -1195,7 +1210,7 @@ net.setIndices(indices, indices.length);
         new BABYLON.ExecuteCodeAction(
             {
                 trigger: BABYLON.ActionManager.OnKeyUpTrigger,
-                additionalData: '['
+                additionalData: "updatePhysics"
             },
 
             function () {
@@ -1321,6 +1336,7 @@ net.setIndices(indices, indices.length);
 
     function updatePhysics()
     {
+
         if(lowEndDevice)
         {
             scene.getPhysicsEngine().getPhysicsPlugin().world.solver.iterations = 1;
@@ -1438,7 +1454,7 @@ engine.runRenderLoop(function() {
             scene.getPhysicsEngine().setTimeStep(1/(40 * .6));
         }
         FPSArray = [];
-        scene.actionManager.processTrigger(scene.actionManager.actions[4].trigger, {additionalData: "["});
+        scene.actionManager.processTrigger(scene.actionManager.actions[4].trigger, {additionalData: "updatePhysics"});
     }
 
     // if(ISMASTER)
@@ -1483,7 +1499,6 @@ function getMyIP() {
    }
   };
 }
-
 // do we need this function of should getMyIP just call checkMyDeviceInfo?
 function showCourt(someIP) {
   checkMyDeviceInfo(someIP);
@@ -1656,21 +1671,9 @@ function gameOver() {
 socket.on('set master', function(){
     ISMASTER = true;
     console.log("SET MASTER " + ISMASTER);
-    scene.actionManager.processTrigger(scene.actionManager.actions[3].trigger, {additionalData: "p"});
+    console.log("ON SETMASTER: animateaction");
+    scene.actionManager.processTrigger(scene.actionManager.actions[3].trigger, {additionalData: "animateaction"});
 
-});
-
-socket.on('game almost ready', function(gamedata){
-   gameName = gamedata.gamename;
-});
-
-socket.on('device knows court', function(data) {
-  // do something with the data
-  console.log('device knows court');
-});
-socket.on('device needs court', function() {
-  // find something out
-  console.log('Device doesnt know court');
 });
 socket.on('sync with master', function(syncData){
 
@@ -1709,6 +1712,19 @@ socket.on('sync with master', function(syncData){
 
 });
 
+socket.on('game almost ready', function(gamedata){
+   gameName = gamedata.gamename;
+});
+
+socket.on('device knows court', function(data) {
+  // do something with the data
+  console.log('device knows court');
+});
+socket.on('device needs court', function() {
+  // find something out
+  console.log('Device doesnt know court');
+});
+
 
 socket.on('join this room', function(data) {
 
@@ -1731,7 +1747,7 @@ socket.on('player joined court', function(userdata) {
     playerData = userdata;
     hasplayer = true;
 
-    scene.actionManager.processTrigger(scene.actionManager.actions[2].trigger, {additionalData: "y"});
+    scene.actionManager.processTrigger(scene.actionManager.actions[2].trigger, {additionalData: "changeGameStateWaiting"});
   } else {
       //IS THIS WHERE LOBBY IS STARTED??
       lobbyStarted = true;
@@ -1760,7 +1776,7 @@ socket.on('take shot', function(data) {
   if (shotmadeincourt == courtName) {
     //var trigger = scene.actionManager.actions[0].trigger;
     console.log(shotInfo);
-    var ae = BABYLON.ActionEvent.CreateNewFromScene(scene, {additionalData: "r"});
+    var ae = BABYLON.ActionEvent.CreateNewFromScene(scene, {additionalData: "takeShot"});
     //console.log(ae);
     scene.actionManager.processTrigger(scene.actionManager.actions[0].trigger,  ae);
   } else {
@@ -1789,7 +1805,7 @@ socket.on('show results', function(resultsdata) {
 
 });
 socket.on('reset game', function() {
-  scene.actionManager.processTrigger(scene.actionManager.actions[1].trigger, {additionalData: "t"});
+  scene.actionManager.processTrigger(scene.actionManager.actions[1].trigger, {additionalData: "changeGameStateAttract"});
   console.log('court should be reset here');
   socket.emit('court reset', courtName);
 });
