@@ -20,7 +20,6 @@ var countdownStarted = true;
 
 var username;
 var team;
-
 var userdata;
 
 var initCameraPos;
@@ -30,6 +29,7 @@ var currentBallState = ballStates.WAITING;
 var targetX = 0;
 var targetY = 0;
 var overlayMaterial;
+
 // Create Scene
 var scene = createScene();
 var pageScaleFactorX;
@@ -59,193 +59,181 @@ function createScene() {
   var distVec;
 
   var ground = BABYLON.Mesh.CreateGround("ground1", 35, 35, 1, scene);
-    var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
-    myMaterial.emissiveTexture = new BABYLON.Texture("/babylon/assets/FillrateTexture.png", scene);
-    myMaterial.alpha = 0;
-    ground.material = myMaterial;
+  var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
+  myMaterial.emissiveTexture = new BABYLON.Texture("/babylon/assets/FillrateTexture.png", scene);
+  myMaterial.alpha = 0;
+  ground.material = myMaterial;
 
   var basketball;
 
   scene.ambientColor = new BABYLON.Color3(1,1,1);
 
   BABYLON.SceneLoader.ImportMesh("", "/babylon/assets/BBall_V2/", "BBall_V2.babylon", scene, function (mesh) {
-      var baseMaterial = new BABYLON.StandardMaterial("baseMaterial", scene);
-      overlayMaterial = new BABYLON.StandardMaterial("overlayMaterial", scene);
-      var multimat = new BABYLON.MultiMaterial("multi", scene);
+    var baseMaterial = new BABYLON.StandardMaterial("baseMaterial", scene);
+    overlayMaterial = new BABYLON.StandardMaterial("overlayMaterial", scene);
+    var multimat = new BABYLON.MultiMaterial("multi", scene);
 
-      baseMaterial.emissiveTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_V2_Albedo.png", scene);
-      baseMaterial.diffuseTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_V2_Albedo.png", scene);
-      baseMaterial.diffuseTexture.hasAlpha = true;
+    baseMaterial.emissiveTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_V2_Albedo.png", scene);
+    baseMaterial.diffuseTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_V2_Albedo.png", scene);
+    baseMaterial.diffuseTexture.hasAlpha = true;
 
-      overlayMaterial.ambientColor = new BABYLON.Color3(1,.4,.2);
+    overlayMaterial.ambientColor = new BABYLON.Color3(1,.4,.2);
 
-      multimat.subMaterials.push(baseMaterial);
-      multimat.subMaterials.push(overlayMaterial);
+    multimat.subMaterials.push(baseMaterial);
+    multimat.subMaterials.push(overlayMaterial);
 
-      basketball = mesh[0];
-      basketball.material = multimat;
+    basketball = mesh[0];
+    basketball.material = multimat;
 
-      basketball.position = new BABYLON.Vector3(-10, 0, 0);
-      basketball.isPickable = false;
-      basketball.physicsImpostor = new BABYLON.PhysicsImpostor(basketball, BABYLON.PhysicsImpostor.SphereImpostor,
-      {
-          mass: 1,
-          friction:0.1,
-          ignoreParent: true
-      });
+    basketball.position = new BABYLON.Vector3(-10, 0, 0);
+    basketball.isPickable = false;
+    basketball.physicsImpostor = new BABYLON.PhysicsImpostor(basketball, BABYLON.PhysicsImpostor.SphereImpostor,
+    {
+      mass: 1,
+      friction:0.1,
+      ignoreParent: true
+    });
 
-      document.addEventListener('mousedown', function(ev){
-          if(currentBallState == ballStates.DRAGGABLE) {
-              currentBallState = ballStates.DRAGGING;
-              targetX = ev.pageX;
-              targetY = ev.pageY;
-              mouseDownPos = new BABYLON.Vector2(ev.pageX, ev.pageY);
-          }
-      });
+    document.addEventListener('mousedown', function(ev) {
+      if(currentBallState == ballStates.DRAGGABLE) {
+            currentBallState = ballStates.DRAGGING;
+            targetX = ev.pageX;
+            targetY = ev.pageY;
+            mouseDownPos = new BABYLON.Vector2(ev.pageX, ev.pageY);
+        }
+    });
 
-      document.addEventListener('mouseup', function(ev){
-          if(currentBallState == ballStates.DRAGGING)
+    document.addEventListener('mouseup', function(ev) {
+      if(currentBallState == ballStates.DRAGGING) {
+          mouseUpPos = new BABYLON.Vector2(ev.pageX, ev.pageY);
+            console.log(mouseDownPos);
+            console.log(mouseUpPos);
+          if (Math.abs(mouseUpPos.y - mouseDownPos.y) > 10 && basketball.physicsImpostor.getLinearVelocity().z > 5)
           {
-              mouseUpPos = new BABYLON.Vector2(ev.pageX, ev.pageY);
-                console.log(mouseDownPos);
-                console.log(mouseUpPos);
-              if (Math.abs(mouseUpPos.y - mouseDownPos.y) > 10 && basketball.physicsImpostor.getLinearVelocity().z > 5)
-              {
-                  takeShot();
-              }
-              else
-              {
-                  currentBallState = ballStates.DRAGGABLE;
-              }
+              takeShot();
           }
-      });
-
-      document.addEventListener('mousemove', function(ev){
-
-          //console.log("mousemove");
-          if(currentBallState != ballStates.DRAGGING) return;
-          targetX = ev.pageX;
-          targetY = ev.pageY;
-
-      });
-
-      document.addEventListener('touchstart', function(ev){
-          if(currentBallState == ballStates.DRAGGABLE) {
-              currentBallState = ballStates.DRAGGING;
-              targetX = ev.targetTouches[0].clientX;
-              targetY = ev.targetTouches[0].clientY;
-              //mouseDownPos = new BABYLON.Vector2(ev.targetTouches[0].clientX, ev.targetTouches[0].clientY);
-          }
-      });
-
-      document.addEventListener('touchmove', function(ev){
-
-          if(currentBallState != ballStates.DRAGGING) return;
-          targetX = ev.targetTouches[0].clientX;
-          targetY = ev.targetTouches[0].clientY;
-
-      });
-
-      document.addEventListener('touchend', function(ev){
-          if(currentBallState == ballStates.DRAGGING)
-           {
-          //     console.log("orig " + ev);
-          //     console.log("touches " + ev.targetTouches);
-          //     console.log("LENGTH " + ev.targetTouches.length);
-          //     console.log("DOWN " + mouseDownPos.y);
-          //     console.log("UP " + mouseUpPos.y);
-          //     mouseUpPos = new BABYLON.Vector2(ev.targetTouches[ev.targetTouches.length - 1].clientX, ev.targetTouches[ev.targetTouches - 1].clientY);
-
-              if (/*Math.abs(mouseUpPos.y - mouseDownPos.y) > 10 && */basketball.physicsImpostor.getLinearVelocity().z > 5)
-              {
-                  takeShot();
-              }
-              else
-              {
-                  currentBallState = ballStates.DRAGGABLE;
-              }
-          }
-      });
-
-      scene.registerBeforeRender(function()
-      {
-          if(currentBallState == ballStates.DRAGGABLE)
+          else
           {
-              var vel = basketball.physicsImpostor.getLinearVelocity();
-              vel.x*= .96;
-              vel.y*= .96;
-              vel.z*= .96;
-              basketball.physicsImpostor.setLinearVelocity(vel);
+              currentBallState = ballStates.DRAGGABLE;
+          }
+      }
+    });
+
+    document.addEventListener('mousemove', function(ev) {
+      if(currentBallState != ballStates.DRAGGING) return;
+      targetX = ev.pageX;
+      targetY = ev.pageY;
+    });
+
+    document.addEventListener('touchstart', function(ev) {
+      if(currentBallState == ballStates.DRAGGABLE) {
+            currentBallState = ballStates.DRAGGING;
+            targetX = ev.targetTouches[0].clientX;
+            targetY = ev.targetTouches[0].clientY;
+            //mouseDownPos = new BABYLON.Vector2(ev.targetTouches[0].clientX, ev.targetTouches[0].clientY);
+        }
+    });
+
+    document.addEventListener('touchmove', function(ev) {
+      if(currentBallState != ballStates.DRAGGING) return;
+      targetX = ev.targetTouches[0].clientX;
+      targetY = ev.targetTouches[0].clientY;
+    });
+
+    document.addEventListener('touchend', function(ev){
+      if(currentBallState == ballStates.DRAGGING) {
+        //     console.log("orig " + ev);
+        //     console.log("touches " + ev.targetTouches);
+        //     console.log("LENGTH " + ev.targetTouches.length);
+        //     console.log("DOWN " + mouseDownPos.y);
+        //     console.log("UP " + mouseUpPos.y);
+        //     mouseUpPos = new BABYLON.Vector2(ev.targetTouches[ev.targetTouches.length - 1].clientX, ev.targetTouches[ev.targetTouches - 1].clientY);
+
+            if (/*Math.abs(mouseUpPos.y - mouseDownPos.y) > 10 && */basketball.physicsImpostor.getLinearVelocity().z > 5)
+            {
+                takeShot();
+            }
+            else
+            {
+                currentBallState = ballStates.DRAGGABLE;
+            }
+        }
+    });
+
+    scene.registerBeforeRender( function() {
+      if(currentBallState == ballStates.DRAGGABLE)
+      {
+          var vel = basketball.physicsImpostor.getLinearVelocity();
+          vel.x*= .96;
+          vel.y*= .96;
+          vel.z*= .96;
+          basketball.physicsImpostor.setLinearVelocity(vel);
+          var convertedRot = new BABYLON.Vector3(0,0,0);
+          var velocity = basketball.physicsImpostor.getLinearVelocity();
+          convertedRot.x = velocity.z;
+          convertedRot.z = -velocity.x;
+          basketball.physicsImpostor.setAngularVelocity(convertedRot);
+      }
+      else if(currentBallState == ballStates.DRAGGING)
+      {
+          //console.log(info.pickInfo);
+          basketball.position.y = 0;
+          var objectPicked = scene.pick(targetX, targetY);
+          var pickedPoint = objectPicked.pickedPoint;
+          if (objectPicked.pickedMesh == ground) {
+
+              targetVec = pickedPoint;
+              initVec = basketball.position.clone();
+
+              distVec = BABYLON.Vector3.Distance(targetVec, initVec);
+              if(distVec < .5)
+              {
+                  basketball.physicsImpostor.setLinearVelocity(
+                      basketball.physicsImpostor.getLinearVelocity.x/2,
+                      0,
+                      basketball.physicsImpostor.setLinearVelocity.z/2);
+
+                  basketball.physicsImpostor.setAngularVelocity(
+                      basketball.physicsImpostor.getLinearVelocity.x/2,
+                      0,
+                      basketball.physicsImpostor.setLinearVelocity.z/2);
+                  return;
+              }
+              targetVec = targetVec.subtract(initVec);
+              targetVecNorm = BABYLON.Vector3.Normalize(targetVec);
+              basketball.physicsImpostor.setLinearVelocity(0,0,0);
+              targetVecNorm.x *=10;
+              targetVecNorm.z *=10;
               var convertedRot = new BABYLON.Vector3(0,0,0);
+              var pushPos = basketball.position;
+              basketball.applyImpulse(targetVecNorm, pushPos);
               var velocity = basketball.physicsImpostor.getLinearVelocity();
               convertedRot.x = velocity.z;
               convertedRot.z = -velocity.x;
               basketball.physicsImpostor.setAngularVelocity(convertedRot);
           }
-          else if(currentBallState == ballStates.DRAGGING)
-          {
-              //console.log(info.pickInfo);
-              basketball.position.y = 0;
-              var objectPicked = scene.pick(targetX, targetY);
-              var pickedPoint = objectPicked.pickedPoint;
-              if (objectPicked.pickedMesh == ground) {
 
-                  targetVec = pickedPoint;
-                  initVec = basketball.position.clone();
+      }
+      else if(currentBallState == ballStates.SHOT) {
+        if(basketball.position.z > 6) {
+          shotInfo = {
+                   xSpeed:basketball.physicsImpostor.getLinearVelocity().x,
+                   ySpeed:basketball.physicsImpostor.getLinearVelocity().z,
+                   deviceWidth:canvas.width,
+                   deviceHeight:canvas.height
+               };
+          socket.emit("throw ball", shotInfo);
 
-                  distVec = BABYLON.Vector3.Distance(targetVec, initVec);
-                  if(distVec < .5)
-                  {
-                      basketball.physicsImpostor.setLinearVelocity(
-                          basketball.physicsImpostor.getLinearVelocity.x/2,
-                          0,
-                          basketball.physicsImpostor.setLinearVelocity.z/2);
-
-                      basketball.physicsImpostor.setAngularVelocity(
-                          basketball.physicsImpostor.getLinearVelocity.x/2,
-                          0,
-                          basketball.physicsImpostor.setLinearVelocity.z/2);
-                      return;
-                  }
-                  targetVec = targetVec.subtract(initVec);
-                  targetVecNorm = BABYLON.Vector3.Normalize(targetVec);
-                  basketball.physicsImpostor.setLinearVelocity(0,0,0);
-                  targetVecNorm.x *=10;
-                  targetVecNorm.z *=10;
-                  var convertedRot = new BABYLON.Vector3(0,0,0);
-                  var pushPos = basketball.position;
-                  basketball.applyImpulse(targetVecNorm, pushPos);
-                  var velocity = basketball.physicsImpostor.getLinearVelocity();
-                  convertedRot.x = velocity.z;
-                  convertedRot.z = -velocity.x;
-                  basketball.physicsImpostor.setAngularVelocity(convertedRot);
-              }
-
+          resetBall();
+        }
+      }
+      else if(currentBallState == ballStates.WAITING) {
+          //console.log("CHECKING FOR DRAGGABLE");
+          if(basketball.position.x > -4 && basketball.position.x < 4) {
+              currentBallState = ballStates.DRAGGABLE;
           }
-          else if(currentBallState == ballStates.SHOT)
-          {
-              if(basketball.position.z > 6)
-              {
-                  shotInfo = {
-                           xSpeed:basketball.physicsImpostor.getLinearVelocity().x,
-                           ySpeed:basketball.physicsImpostor.getLinearVelocity().z,
-                           deviceWidth:canvas.width,
-                           deviceHeight:canvas.height
-                       };
-                  socket.emit("throw ball", shotInfo);
-
-                  resetBall();
-              }
-          }
-          else if(currentBallState == ballStates.WAITING)
-          {
-              //console.log("CHECKING FOR DRAGGABLE");
-              if(basketball.position.x > -4 && basketball.position.x < 4)
-              {
-                  currentBallState = ballStates.DRAGGABLE;
-              }
-          }
-      });
+      }
+    });
 
   });
 
@@ -352,12 +340,43 @@ $gameover.fadeOut();
 // $passcodeInput.focus();
 $window.keydown(function (event) {
   // When the client hits ENTER on their keyboard
-  if (event.which === 13)
-  {
-      initializePlayer();
-      $passcodeInput.blur();
+  if (event.which === 13) {
+    initializePlayer();
+    $passcodeInput.blur();
   }
 });
+
+function submitGameCode() {
+  var courttojoin;
+  courttojoin = cleanInput($passcodeInput.val().trim());
+
+  attemptToJoinCourt(courttojoin);
+}
+function attemptToJoinCourt(someCourtName){
+  username = generateName();
+  team = generateTeam();
+
+  var courttojoin = someCourt;
+  if (courttojoin) {
+      courttojoin = courttojoin.toUpperCase();
+  } else {
+      courttojoin = 'GAME';
+  }
+
+  if (ISTEAMGAME) {
+    overlayMaterial.ambientColor = team.colorRGB;
+  }
+
+  userdata = {
+      'username': username,
+      'team': team,
+      'court': courttojoin
+  };
+
+  console.log('ATTEMPTTOJOINCOURT: Court name - ' + courttojoin);
+  // Tell the server your new room to connect to
+  socket.emit('player wants to join court', userdata);
+}
 
 function initializePlayer() {
   var courttojoin;
@@ -365,6 +384,7 @@ function initializePlayer() {
 
   joinCourt(courttojoin);
 }
+
 function joinCourt(someCourt) {
   username = generateName();
   team = generateTeam();
@@ -382,7 +402,9 @@ function joinCourt(someCourt) {
   // fade out input page
   //$pages.fadeOut();
 
+  if (ISTEAMGAME) {
     overlayMaterial.ambientColor = team.colorRGB;
+  }
 
   userdata = {
       'username': username,
@@ -390,10 +412,11 @@ function joinCourt(someCourt) {
       'court': courttojoin
   };
 
-  console.log('Court name - ' + courttojoin);
+  // socket.emit('add user', userdata);
+
+  console.log('ATTEMPTTOJOINCOURT: Court name - ' + courttojoin);
   // Tell the server your new room to connect to
   socket.emit('player wants to join court', userdata);
-  // socket.emit('add user', userdata);
 }
 function cleanInput(input) {
   return $('<div/>').text(input).html();
@@ -444,14 +467,3 @@ socket.on('show results', function(resultsdata) {
   console.log('Results:');
   console.dir(resultsdata);
 });
-//To Delete?
-  //(function() {
-  // var wf = document.createElement('script');
-  // wf.src = ('https:' === document.location.protocol ? 'https' : 'http') +
-  //     '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-  // wf.type = 'text/javascript';
-  // wf.async = 'true';
-  // var s = document.getElementsByTagName('script')[0];
-  // s.parentNode.insertBefore(wf, s);
-  //})();
-  // jshint ignore:end

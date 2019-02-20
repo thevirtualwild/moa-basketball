@@ -17,7 +17,7 @@ var initWaitingLeftTextPos;
 function UIWaitingAnimateIn()
 {
     //initWaitingLeftTextPos = textWaiting.style.left;
-    console.log(initWaitingLeftTextPos);
+    // console.log(initWaitingLeftTextPos);
     transitioned = false;
     turnOnWaiting();
 

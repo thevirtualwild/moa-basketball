@@ -22,8 +22,10 @@ var alldevices = {},
     allconfigs = {},
     courtnames = {},
     roomnames = {};
+    allgames = {};
 
 var USEMASTERSLAVEMODE = true;
+var ISTEAMGAME = false;
 
 var connectedcourtdevices = {};
 
@@ -552,16 +554,17 @@ function onConnection(socket) {
 
 
   function addCourtGameScore(courtgamedata) {
-    console.log('add score to database socket.gamename - ' + socket.gamename);
-    // console.dir(courtgamedata);
+    var thisgamesroom = roomnames[socket.roomname];
+    var thissocketgamename = thisgamesroom.gamename;
+    socket.gamename = thissocketgamename;
 
+    console.log('add score to database socket.gamename - ' + socket.gamename);
+    console.dir(courtgamedata);
 
     pushScoreToDatabase(courtgamedata);
 
 
-    var thisgamesroom = roomnames[socket.roomname];
 
-    var thissocketgamename = thisgamesroom.gamename;
     var agame = gamesplayed[thissocketgamename];
     // add score to list of scores
     if (agame) {
@@ -606,33 +609,39 @@ function onConnection(socket) {
       // // console.log('counted,courtcount: ' + thisgamesroom.scorescounted + ',' + thisgamesroom.courtcount);
     }
 
-
-
-    // pushScoreToDatabase(courtgamedata);
-
   }
 
   function pushScoreToDatabase(data) {
     playername = data.player.username;
-    playerteam = teamindex[data.player.team.name];
+    var playerstreak = data.highestStreak;
+    var playershotsmade = data.shotsMade;
+    if(ISTEAMGAME) {
+      playerteam = teamindex[data.player.team.name];
+    } else {
+      playerteam = 'N/A';
+    }
 
     playerscore = data.player.score;
 
-    console.log('oldteamscores');
-    console.dir(teamscores);
-    oldteam = teamscores[data.player.team.name];
-    oldteam.score += playerscore;
-    teamscores[data.player.team.name] = oldteam;
+    if(ISTEAMGAME) {
+      console.log('oldteamscores');
+      console.dir(teamscores);
+      oldteam = teamscores[data.player.team.name];
+      oldteam.score += playerscore;
+      teamscores[data.player.team.name] = oldteam;
 
-    console.log('newteamscores');
-    console.dir(teamscores);
+      console.log('newteamscores');
+      console.dir(teamscores);
+    }
 
     if (playerscore > 0) {
 
       score_base('Players').create({
         "Name": playername,
-        "Team": [playerteam],
+        // "Team": [playerteam],
         "Score": playerscore,
+        "Longest Streak": playerstreak,
+        "Shots Made": playershotsmade,
         "Submission Date": new Date()
       }, function(err, record) {
           if (err) { console.error(err); return; }
@@ -1031,6 +1040,17 @@ function onConnection(socket) {
     console.log('thisgamesroom:');
     console.dir(thisgamesroom);
 
+    if (thisgamesroom.gamerunning) {
+      console.log('Game is already running, we need to add our court to the count of courts running game');
+      // socket.gamename = thisgamesroom.gamename;
+      thisgamesroom.courtcount += 1;
+      // // // console.log('courtcount: ' + thisgamesroom.courtcount);
+      roomnames[socket.roomname] = thisgamesroom;
+      allrooms[thisgamesroom.id] = thisgamesroom;
+    } else {
+      console.log('Game is not running we need to start it');
+      startGame();
+    }
 
     //POSSIBLE ISSUE
     // if (!socket.gamename) {
@@ -1046,19 +1066,6 @@ function onConnection(socket) {
     // // // // // console.log('running:' + thisgamesroom.gamerunning);
 
 
-
-    if (thisgamesroom.gamerunning) {
-      console.log('Game is already running, we need to add our court to the count of courts running game');
-      // socket.gamename = thisgamesroom.gamename;
-      thisgamesroom.courtcount += 1;
-      // // // console.log('courtcount: ' + thisgamesroom.courtcount);
-      roomnames[socket.roomname] = thisgamesroom;
-      allrooms[thisgamesroom.id] = thisgamesroom;
-    } else {
-      console.log('Game is not running we need to start it');
-      startGame();
-    }
-
     //TODO: WILL NEED TO LISTEN FOR AN EVENT TO TURN GAME PROGRESS OFF AFTER RESULTS ARE SHOWN
 
   });
@@ -1067,6 +1074,7 @@ function onConnection(socket) {
     var thisgamesroom = roomnames[socket.roomname];
     console.log('---Step 2---');
     console.log('start game (current gamename)- ' + thisgamesroom.gamename);
+    socket.gamename = thisgamesroom.gamename;
 
     thisgamesroom.gamerunning = true;
     thisgamesroom.canjoingame = false;
@@ -1133,8 +1141,6 @@ function onConnection(socket) {
   socket.on('game over', function(courtgamedata) {
 
     // Submit Player Data To Database
-    // // // // // // // console.log('game over');
-    // // // // // // console.dir(gamedata);
     addCourtGameScore(courtgamedata);
 
     var thisgamesroom = roomnames[socket.roomname];

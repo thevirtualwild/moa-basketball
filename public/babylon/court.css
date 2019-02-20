@@ -63,10 +63,54 @@ ul {
   padding: 0;
 }
 
-canvas {
-  width: 100%;
-  height: 100%;
+#screen-overlay {
+  background:white;
+  padding:60px;
   position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+#screen-overlay img {
+  width:100%;
+  height:100%;
+  object-fit: contain;
+}
+#screen-wrapper {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+}
+
+#instructions {
+  width:25%;
+  height:100%;
+  float:left;
+  position:relative;
+  background: white;
+}
+  #instructions * {
+    display: none;
+  }
+  #instructions .to-show {
+    margin-top: 20%;
+    text-align: center;
+}
+
+#game-container {
+  width: 75%;
+  height: 100%;
+  float: left;
+  position: relative;
+}
+canvas {
+  width:100%;
+  height: 100%;
+  position: position;
   top: 0;
   left: 0;
   right: 0;

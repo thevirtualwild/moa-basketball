@@ -81,7 +81,7 @@ function UIGameplayAnimateBadgeOn(comboNum)
     comboNumText.innerHTML = comboNum.toString();
 
 
-    if(comboNum == 2)
+    if(comboNum <= 2)
     {
         TweenMax.to(comboNumText, 0.1, {opacity: 1});
         TweenMax.to(comboBadge, 0.1, {opacity: 1});
@@ -107,4 +107,3 @@ function turnOffDisplay()
 
     UIResultsAnimateIn();
 }
-

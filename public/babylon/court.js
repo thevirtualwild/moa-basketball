@@ -23,20 +23,11 @@ var pulseAmbientColor = false;
 var add1Point = false;
 
 var sceneLoaded = false;
-var initLoadTime = 7;
-var currentLoadTime = 7;
 
 var netPhysicsDisabled = false;
 
 var hasCourt = false;
 
-var USEMASTERSLAVEMODE = true;
-var ISMASTER;
-if (USEMASTERSLAVEMODE) {
-  ISMASTER = false;
-} else {
-  ISMASTER = true;
-}
 
 var readyToSync = false;
 var masterData;
@@ -44,16 +35,12 @@ var masterData;
 var totalTime = 0;
 var netSpheres = [];
 var netVisiblePositions = [];
-var attractShots = [-.12, 1.2, 1.1, .3, 1, -.2, -2.5, 1.8, 0, 3.2]
 var cameraSettings = [];
 
 var worldtime = 0;
-var initWaitTime = 15;
-var currentWaitTime = 15;
-var initGameTime = 30;
-var currentGameTime = 30;
-var initResultsTime = 10;
-var currentResultsTime = 10;
+var currentWaitTime = initWaitTime;
+var currentGameTime = initGameTime;
+var currentResultsTime = initResultsTime;
 var shotIndex = 0;
 var attractIndex = 0;
 var currentNetLerpDelayTime = 2;
@@ -61,8 +48,12 @@ var initNetLerpDelayTime = 2;
 var currentNetLerpTime = 0.25;
 var initNetLerpTime = 0.25;
 var ComboIsBroken = false;
+var StreakIsBroken = false;
 var initEmitTime = 0.01;
 var currentEmitTime = 0.01;
+
+var loadScreenHasAnimatedOut = false;
+
 
 var gameReady = false;
 
@@ -75,6 +66,10 @@ var playerData;
 
 var score = 0;
 var combo = 0;
+var highestStreak = 0;
+var shotsMade = 0;
+var combopts = 0;
+var scoremodifier = 1;
 var newBasketballs = [];
 //var newBasketballOutlines = [];
 
@@ -142,7 +137,7 @@ function createScene() {
     shotClockTens.material = myMaterialTens;
     shotClockOnes.material = myMaterialOnes;
 
-    currentGameTime = initGameTime;
+    resetClock();
 
     for(var i = 0; i < 10; i++) {
         shotClockTextures[i] = new BABYLON.Texture("./assets/ShotClock/Alphas/Texture" + i + ".png", scene, false, false, 1, function()
@@ -188,7 +183,9 @@ function createScene() {
                 currentCameraIndex = 1;
                 lobbyStarted = false;
                 updateUI();
-                updateBallColor();
+                if (ISTEAMGAME) {
+                  updateBallColor();
+                }
                 break;
             case gameStates.RESULTS:
                 currentGameState = gameState;
@@ -341,7 +338,10 @@ function createScene() {
       else if(currentGameState == gameStates.GAMEPLAY)
       {
           currentGameTime -= (engine.getDeltaTime() / 1000);
-          var time = currentGameTime.toFixed(2);
+          if(combopts > 1) {
+            combopts -= (scoremodifier * (engine.getDeltaTime() / 2000) ); //change for combo dropoff
+          }
+          var time = currentGameTime.toFixed(2); // do we need this?
           attractLabel.innerHTML =  "";
 
           if(currentGameTime <= 0)
@@ -351,6 +351,7 @@ function createScene() {
           }
 
           updateClock();
+
       }
       else if(currentGameState == gameStates.RESULTS)
       {
@@ -358,7 +359,7 @@ function createScene() {
 
           if(currentResultsTime <= -2 && !roomReset)
           {
-              currentGameTime = initGameTime;
+              resetClock();
               updateClock();
 
               if(ISMASTER){
@@ -369,7 +370,7 @@ function createScene() {
           else if(currentResultsTime <= 0)
           {
               UIResultsAnimateOut();
-              currentGameTime = initGameTime;
+              resetClock();
               updateClock();
           }
       }
@@ -487,14 +488,14 @@ function createScene() {
 
                 if(currentGameState == gameStates.GAMEPLAY || currentGameState == gameStates.RESULTS)
                 {
-                    if(basketballs[i].position.y < -30 &&
-                        basketballStates[i] == 1)
+                    if(basketballs[i].position.y < -30 && basketballStates[i] == 1)
                     {
                         combo = 0;
                         //UIGameplayAnimateBadgeOff();
                         //changeBallFX(false);
                         basketballStates[i] = 0;
                         ComboIsBroken = true;
+                        StreakIsBroken = true;
                     }
                 }
             }
@@ -505,6 +506,10 @@ function createScene() {
             if(currentLoadTime <= 0)
             {
                 sceneLoaded = true;
+                if (!loadScreenHasAnimatedOut) {
+                  loadScreenAnimateOut();
+                  loadScreenHasAnimatedOut = true;
+                }
             }
             if(currentEmitTime <= 0)
             {
@@ -529,6 +534,7 @@ function createScene() {
                     score: add1Point,
                     combo: combo,
                     comboIsBroken: ComboIsBroken,
+                    streakIsBroken: StreakIsBroken,
                     basketballs: [],
                     netvertexes: [],
                     shotindex: shotIndex,
@@ -603,23 +609,7 @@ function createScene() {
 
                 if(masterData.score == true)
                 {
-                    console.log("BASKET MADE RECEIVED");
-                    // score++;
-
-                    if (combo < 2) {
-                      score = score + 2;
-                    }
-                    if(combo >= 2)
-                    {
-                      score = score + 2;
-                        UIGameplayAnimateBadgeOn(combo);
-                    }
-
-                    if(combo >= 3)
-                    {
-                      score= score + 3;
-                      changeBallFX(true);
-                    }
+                    madeAShot();
 
                     addScore();
                     masterData.score = false;
@@ -631,6 +621,7 @@ function createScene() {
                     UIGameplayAnimateBadgeOff();
                     changeBallFX(false);
                     ComboIsBroken = false;
+                    StreakIsBroken = false;
                     combo = 0;
                 }
 
@@ -703,24 +694,24 @@ function createScene() {
 
     BABYLON.SceneLoader.ImportMesh("Goal_Lights_Backboard", "./assets/Layout/", "Goal.babylon", scene, function (mesh) {
 
-            var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
+        var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
 
-            var mesh = mesh[0];
+        var mesh = mesh[0];
 
-            myMaterial.emissiveTexture = new BABYLON.Texture("./assets/Alpha Textures/LightGradient_Red.png", scene);
-            myMaterial.diffuseTexture = new BABYLON.Texture("./assets/Alpha Textures/LightGradient_Red.png", scene);
-            myMaterial.opacityTexture = new BABYLON.Texture("./assets/Alpha Textures/LightGradient_Red.png", scene);
+        myMaterial.emissiveTexture = new BABYLON.Texture("./assets/Alpha Textures/LightGradient_Red.png", scene);
+        myMaterial.diffuseTexture = new BABYLON.Texture("./assets/Alpha Textures/LightGradient_Red.png", scene);
+        myMaterial.opacityTexture = new BABYLON.Texture("./assets/Alpha Textures/LightGradient_Red.png", scene);
 
-            myMaterial.diffuseTexture.hasAlpha = true;
+        myMaterial.diffuseTexture.hasAlpha = true;
 
-            myMaterial.alpha = 0;
-            var newPos = new BABYLON.Vector3(0, 0, 0);
-            newPos.x = mesh.position.x + 0;
-            newPos.y = mesh.position.y + -35.75;
-            newPos.z = mesh.position.z - 60;
-            mesh.position = newPos;
-            mesh.material = myMaterial;
-            //scene.meshes.pop(mesh);
+        myMaterial.alpha = 0;
+        var newPos = new BABYLON.Vector3(0, 0, 0);
+        newPos.x = mesh.position.x + 0;
+        newPos.y = mesh.position.y + -35.75;
+        newPos.z = mesh.position.z - 60;
+        mesh.position = newPos;
+        mesh.material = myMaterial;
+        //scene.meshes.pop(mesh);
         scene.registerBeforeRender(function()
         {
             if(currentGameState == gameStates.RESULTS)
@@ -1230,6 +1221,8 @@ function createScene() {
             secondDigit = parseInt((currentGameTime+ 1).toFixed(2).substr(0, 1));
         }
 
+        console.log("UPDATECLOCK: current combopts - " + combopts + ' - ' + scoremodifier);
+
         if(currentGameTime == 30)
         {
             secondDigit = 0;
@@ -1315,7 +1308,7 @@ function createScene() {
         if(attractIndex >= attractShots.length) attractIndex = 0;
     }
 
-    function updateBallColor()
+    function updateBallColor() //only used if ISTEAMGAME
     {
         for(var i = 0; i < basketballs.length; i++)
         {
@@ -1324,7 +1317,7 @@ function createScene() {
         }
     }
 
-    function resetBallColor()
+    function resetBallColor() //only used if ISTEAMGAME
     {
         if(basketballs === undefined) return;
         for(var i = 0; i < basketballs.length; i++)
@@ -1558,6 +1551,57 @@ function randomRange (min, max) {
     return number;
 }
 
+function updateScoreModifier() {
+  if (combopts >= 92) {
+    if (scoremodifier == 10) {
+      console.log('Too long to score');
+    } else {
+      combopts = 93;
+      scoremodifier = 10;
+    }
+  } else if (combopts >= 74) {
+    scoremodifier = 9;
+  } else if (combopts >= 58) {
+    scoremodifier = 8;
+  } else if (combopts >= 44) {
+    scoremodifier = 7;
+  } else if (combopts >= 32) {
+    scoremodifier = 6;
+  } else if (combopts >= 22) {
+    scoremodifier = 5;
+  } else if (combopts >= 14) {
+    scoremodifier = 4;
+  } else if (combopts >= 8) {
+    if (scoremodifier == 3) {
+      console.log('Too long to score');
+    } else {
+      combopts = 9;
+      scoremodifier = 3;
+    }
+  } else if (combopts >= 4) {
+    if (scoremodifier == 2) {
+      console.log('Too long to score');
+    } else {
+      combopts = 5;
+      scoremodifier = 2;
+    }
+  } else {
+    scoremodifier = 1;
+  }
+}
+function madeAShot() {
+  console.log("BASKET MADE RECEIVED");
+
+  var scoreToAdd = scoremodifier * 2;
+
+  score = score + scoreToAdd;
+
+  combopts = combopts + 1 + (scoreToAdd);
+  console.log("MADEASHOT: combopts - " + combopts);
+  updateScoreModifier();
+  UIGameplayAnimateBadgeOn(scoremodifier); //was combo
+  // changeBallFX(true);
+}
 function addScore() {
     currentNetState = netStates.WAITING;
     currentNetLerpDelayTime = initNetLerpDelayTime;
@@ -1572,6 +1616,11 @@ function addScore() {
     playerData.score = score;
 
     combo++;
+    shotsMade++;
+    if (combo > highestStreak) {
+      highestStreak = combo;
+      console.log("Highest Streak: " + highestStreak);
+    }
     console.log("Combo: " + combo);
 
 }
@@ -1587,7 +1636,7 @@ function updateUI() {
             //attractLabel.innerHTML = "COURT CODE: <br /> " + courtName;
             UIAttractUpdateCourtName(courtName);
             attractLabel.innerHTML = "";
-            currentGameTime = initGameTime;
+            resetClock();
             UIGameplayUpdateScore(0);
             if(!initRun){
                 console.log("uianimatein inside of updateui");
@@ -1596,9 +1645,7 @@ function updateUI() {
             break;
         case gameStates.WAITING:
             scoreLabel.innerHTML = "COURT CODE: " + courtName;
-            // attractLabel.innerHTML = "COURT CODE: " + courtName; + " <br/>" + initWaitTime.toString();
             attractLabel.innerHTML = "";
-            //currentWaitTime = initWaitTime;
             UIAttractAnimateOut();
             break;
         case gameStates.GAMEPLAY:
@@ -1648,6 +1695,10 @@ function createCameraTypes() {
     cameraSettings.push(cameraType);
 }
 
+function resetClock() {
+  currentGameTime = initGameTime;
+}
+
 function gameOver() {
   // the game is finished, submit the score and do stuff
 
@@ -1656,7 +1707,9 @@ function gameOver() {
     player: playerData,
     score: score,
     combo: combo,
-      gamename: gameName
+    highestStreak: highestStreak,
+    shotsMade: shotsMade,
+    gamename: gameName
   }
 
     console.log(gamedata);
@@ -1714,6 +1767,7 @@ socket.on('sync with master', function(syncData){
 
 socket.on('game almost ready', function(gamedata){
    gameName = gamedata.gamename;
+   console.log('GAMEALMOSTREADY: ' + gameName);
 });
 
 socket.on('device knows court', function(data) {
@@ -1749,8 +1803,8 @@ socket.on('player joined court', function(userdata) {
 
     scene.actionManager.processTrigger(scene.actionManager.actions[2].trigger, {additionalData: "changeGameStateWaiting"});
   } else {
-      //IS THIS WHERE LOBBY IS STARTED??
-      lobbyStarted = true;
+    //IS THIS WHERE LOBBY IS STARTED??
+    lobbyStarted = true;
     console.log('Player ' + userdata.username + ' - Joined Sister Court - ' + userdata.court);
   }
 });
