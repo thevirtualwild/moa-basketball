@@ -351,7 +351,7 @@ function submitGameCode() {
   courttojoin = cleanInput($passcodeInput.val().trim());
 
   attemptToJoinCourt(courttojoin);
-}
+} //not used yet
 function attemptToJoinCourt(someCourtName){
   username = generateName();
   team = generateTeam();
@@ -376,7 +376,7 @@ function attemptToJoinCourt(someCourtName){
   console.log('ATTEMPTTOJOINCOURT: Court name - ' + courttojoin);
   // Tell the server your new room to connect to
   socket.emit('player wants to join court', userdata);
-}
+} //not used yet
 
 function initializePlayer() {
   var courttojoin;
@@ -414,7 +414,7 @@ function joinCourt(someCourt) {
 
   // socket.emit('add user', userdata);
 
-  console.log('ATTEMPTTOJOINCOURT: Court name - ' + courttojoin);
+  console.log('JOINCOURT: Court name - ' + courttojoin);
   // Tell the server your new room to connect to
   socket.emit('player wants to join court', userdata);
 }
@@ -428,7 +428,7 @@ socket.on('reset game', function(){
 });
 
 socket.on('you joined court', function() {
-    UIInputAnimateOut();
+    UIInputAnimateOut(); //from input.js (then customize.js)
 });
 socket.on('court not found', function() {
     console.log("COURT NOT FOUND");

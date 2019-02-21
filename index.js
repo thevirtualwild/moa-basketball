@@ -424,8 +424,9 @@ function onConnection(socket) {
             court: socket.court
           }
 
-          // // // // // console.log("IS GAME IN PROGRESS? " + socket.gamenamesrunning);
-
+          // // // console.log("IS GAME IN PROGRESS? " + socket.gamenamesrunning);
+          console.log('Player joining court:');
+          console.dir(data);
           socket.broadcast.to(socket.roomname).emit('player joined court', data);
           // // // // // console.log('socket.roomname - ' + socket.roomname);
 
@@ -1072,21 +1073,39 @@ function onConnection(socket) {
 
   function startGame() {
     var thisgamesroom = roomnames[socket.roomname];
-    console.log('---Step 2---');
-    console.log('start game (current gamename)- ' + thisgamesroom.gamename);
-    socket.gamename = thisgamesroom.gamename;
-
-    thisgamesroom.gamerunning = true;
-    thisgamesroom.canjoingame = false;
-    thisgamesroom.scorescounted = 0;
 
     if (thisgamesroom.gamenum) {
       thisgamesroom.gamenum += 1;
     } else {
       thisgamesroom.gamenum = 1;
     }
-    thisgamesroom.gamename = thisgamesroom.id + '_' + thisgamesroom.gamenum;
-    console.log('starting game with new gamename: ' + thisgamesroom.gamename);
+
+    var newdate = new Date();
+    // var slicedate = newdate.toISOString().slice(0,10);
+    var month = newdate.getMonth();
+    var day = newdate.getDate();
+    var hour = newdate.getHours();
+    var minutes = newdate.getMinutes();
+    // var gameday = newdate.Date();
+    // var gametime = newdate.Time();
+    thisgamesroom.gamename = thisgamesroom.id + '_' + month + '_' + day + '_' + hour + '_' + minutes;
+
+    console.log('---Step 2---');
+    console.log('start game (current gamename)- ' + thisgamesroom.gamename);
+    newGameObject = {
+      gamename: thisgamesroom.gamename,
+      players: {},
+      gameDateTime: newdate
+    }
+    console.log(newGameObject);
+    socket.game = newGameObject;
+    socket.gamename = thisgamesroom.gamename;
+
+    thisgamesroom.gamerunning = true;
+    thisgamesroom.canjoingame = false;
+    thisgamesroom.scorescounted = 0;
+
+    // console.log('starting game with new gamename: ' + thisgamesroom.gamename);
     // // // console.log('game started: ' + thisgamesroom.gamename);
     thisgamesroom.courtcount = 1;
     // // // console.log('courtcount: ' + thisgamesroom.courtcount);
@@ -1099,7 +1118,8 @@ function onConnection(socket) {
     // updateGameName(thisgamesroom.gamename);
 
     var gamedata = {
-      gamename: thisgamesroom.gamename
+      gamename: thisgamesroom.gamename,
+      game: newGameObject
     }
 
     // // console.log('game almost ready');
@@ -1138,11 +1158,15 @@ function onConnection(socket) {
     socket.broadcast.to(socket.roomname).emit('take shot', emitData);
 
   });
-  socket.on('game over', function(courtgamedata) {
-
+  socket.on('game over', function(someCourtData) {
+    courtGameHasEnded(someCourtData);
+    // addCourtScoreForGame(someCourtData);
     // Submit Player Data To Database
-    addCourtGameScore(courtgamedata);
+    addCourtGameScore(someCourtData);
 
+
+  });
+  function courtGameHasEnded(someCourtData) {
     var thisgamesroom = roomnames[socket.roomname];
 
     if (thisgamesroom.gamerunning) {
@@ -1152,7 +1176,11 @@ function onConnection(socket) {
       roomnames[socket.roomname] = thisgamesroom;
       allrooms[thisgamesroom.id] = thisgamesroom;
     }
-  });
+  }
+  function addCourtScoreForGame(someCourtData) {
+
+  }
+
   socket.on('room reset', function() {
     var thisgamesroom = roomnames[socket.roomname];
 

@@ -1702,6 +1702,18 @@ function resetClock() {
 function gameOver() {
   // the game is finished, submit the score and do stuff
 
+  var playerScoreData = {
+    score: score,
+    combo: combo,
+    highestStreak: highestStreak,
+    shotsMade: shotsMade
+  }
+
+  var courtdata = {
+    playerInfoData: playerData,
+    playerScoreData: playerScoreData,
+    gameName: gameName
+  }
 
   var gamedata = {
     player: playerData,
@@ -1712,7 +1724,8 @@ function gameOver() {
     gamename: gameName
   }
 
-    console.log(gamedata);
+  console.log('GAMEOVER: gamedata - ' + gamedata);
+  console.log('GAMEOVER: courtdata - ' + courtdata);
 
   if(playerData) {
       if(ISMASTER) {//MAYBE CHECK IF HAS PLAYER
