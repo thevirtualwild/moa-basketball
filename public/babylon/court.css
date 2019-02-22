@@ -1,3 +1,14 @@
+/*
+$yellow1: #f8d133; $yellow2: rgb(239,173,20);
+$green1: #a5ce37; $green2: rgb(56, 171, 37);
+$blue1: #0095b6; $blue2: rgb(0, 107, 138);
+$pink1: #f43886; $pink2: rgb(158, 2, 91);
+$orange1: #faab18; $orange2: rgb(241, 99, 34);
+*/
+
+
+
+
 @font-face {
   font-family: 'Gobold';
   src: url("assets/Fonts/GoboldLight.otf");
@@ -22,6 +33,28 @@
   font-family: 'XScale';
   src: url("assets/Fonts/X-SCALE_.TTF");
 }
+
+
+
+@font-face {
+  font-family: 'Interstate';
+  font-weight: 500;
+  src: url("assets/Fonts/interstate-regular.ttf");
+}
+@font-face {
+  font-family: 'Interstate';
+  font-weight: 700;
+  src: url("assets/Fonts/interstate-boldcompressed.otf");
+}
+@font-face {
+  font-family: 'Fresh Marker';
+  src: url("assets/Fonts/freshmarker.ttf");
+}
+
+
+
+
+
 * {
   box-sizing: border-box;
   font-family: "Gobold";
@@ -93,13 +126,6 @@ ul {
   position:relative;
   background: white;
 }
-  #instructions * {
-    display: none;
-  }
-  #instructions .to-show {
-    margin-top: 20%;
-    text-align: center;
-}
 
 #game-container {
   width: 75%;
@@ -110,7 +136,7 @@ ul {
 canvas {
   width:100%;
   height: 100%;
-  position: position;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -721,3 +747,275 @@ footer #footerRight img#sponsorGround {
 }
 
 /*# sourceMappingURL=court.css.map */
+
+
+
+
+#template {
+  display: none !important;
+}
+
+
+#instructions {
+  width: 29%;
+  padding: 0 50px;
+  z-index: 100;
+}
+#instructions:before {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background: linear-gradient(90deg, #dbdbdb 15%, #fff 40%);
+  left: 0px;
+  z-index: -1;
+  opacity: 1;
+}
+#instructions * {
+  /* display: none; */
+}
+#instructions .to-show {
+  margin-top: 20%;
+  text-align: center;
+}
+#scoreLabel, #attractLabel, #fpsLabel, #fpsLabel-bot {
+  display:none;
+}
+
+#gameLogo {
+  text-align: center;
+}
+
+#texting-info *, #gamecode-info * {
+  font-family:'Interstate' !important;
+}
+#texting-info, #gamecode-info {
+  text-align: center;
+  font-size: 48px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #333;
+}
+.emphasis-text {
+  font-size: 120px;
+  line-height:1.05;
+  font-weight: 700;
+  color: #010101;
+}
+#texting-info .general-text.small-height {
+  line-height: 0.55;
+  margin-bottom:10px;
+}
+
+#permanentGameBranding {
+  display:none;
+}
+
+hr {
+  height: 6px;
+  background: #333;
+  margin-bottom: 25px;
+  margin-top:10px;
+}
+
+#game-overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+#sponsorArea {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  height: 200px;
+  width: 255px;
+  filter: drop-shadow(-25px 10px 5px rgba(0,0,0,0.5));
+}
+#sponsorGround {
+  height: 100%;
+  width: 100%;
+  background: white;
+  clip-path: polygon(26% 0, 100% 0%,100% 100%, 0% 100%);
+}
+#sponsorLogo {
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 23px 20px;
+}
+
+
+/*
+$yellow1: #f8d133;
+$green1: #a5ce37;
+$blue1: #0095b6;
+$pink1: #f43886;
+$orange1: #faab18;
+*/
+
+
+#gamecode-container {
+  position: absolute;
+  width: 115%;
+  z-index: 999;
+  bottom: 40px;
+  margin-left: -50px;
+  margin-right: -50px;
+  filter: drop-shadow(-25px 10px 5px rgba(0,0,0,0.5));
+}
+#gamecode-background {
+  font-size: 143px;
+  color: white;
+  line-height: 1.4;
+
+  background: linear-gradient(-90deg, #a5ce37, rgb(56, 171, 37));
+	/* background-size: 400% 400%; */
+	/* -webkit-animation: Gradient 8s ease infinite;
+	-moz-animation: Gradient 8s ease infinite;
+	animation: Gradient 8s ease infinite; */
+
+
+  padding-right: 15%;
+  clip-path: polygon(0% 0, 100% 0%, 89.5% 100%, 0% 100%);
+}
+
+#info-container {
+  /* bottom: 40px; */
+}
+
+#gameplay-flavortext {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-family: 'Fresh Marker' !important;
+  font-size: 200px;
+}
+
+#gameplay-flavortext .top, #gameplay-flavortext .bottom {
+  font-family: inherit;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+#gameplay-flavortext .top {
+  transform: rotate(-14deg) translate(-130px, -15px);
+}
+
+#gameplay-flavortext .bottom {
+  transform: rotate(-14deg) translate(130px, 0px);
+}
+
+
+
+.large-rectangle, .small-rectangle {
+    background: linear-gradient(-90deg, #a5ce37, rgb(56, 171, 37));
+    transform:rotate(-72deg);
+    opacity:.5;
+}
+#right-lights .large-rectangle, #left-lights .small-rectangle {
+  background: linear-gradient(90deg, #a5ce37, rgb(56, 171, 37));
+}
+.large-rectangle {
+    height: 288px;
+    width: 1500px;
+}
+
+.small-rectangle {
+    height: 35px;
+    width: 1000px;
+}
+
+div#left-lights {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 300px;
+    position: absolute;
+}
+
+
+.light-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+
+#left-lights .large-rectangle {
+    transform: rotate(-72deg) translateY(-763px);
+}
+#left-lights .small-rectangle {
+    transform: rotate(-72deg) translateY(-384px) translateX(-580px);
+}
+
+#right-lights .large-rectangle {
+    transform: rotate(-72deg) translateY(-292px) translateX(-400px);
+}
+#right-lights .small-rectangle {
+    transform: rotate(-72deg) translateY(-199px) translateX(-220px);
+}
+
+div#right-lights {
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 300px;
+    position: absolute;
+}
+
+
+/* .gamecode-text {
+} */
+/*
+@-webkit-keyframes Gradient {
+	0% {
+		background-position: 0% 50%
+	}
+	50% {
+		background-position: 50% 50%
+	}
+	100% {
+		background-position: 100% 50%
+	}
+}
+
+@-moz-keyframes Gradient {
+	0% {
+		background-position: 0% 50%
+	}
+	50% {
+		background-position: 50% 50%
+	}
+	100% {
+		background-position: 100% 50%
+	}
+}
+
+@keyframes Gradient {
+	0% {
+		background-position: 0% 50%
+	}
+	50% {
+		background-position: 50% 50%
+	}
+	100% {
+		background-position: 100% 50%
+	}
+} */
+
+
+
+
+
+
+
+
+#game-container {
+  width:71%;
+}
