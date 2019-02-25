@@ -11,16 +11,20 @@ var comboNumText = document.getElementById("comboNum");
 var streak = document.getElementById("streak");
 var sparkle = comboBadge.getElementsByClassName("sparkle")[0];
 
+var infobarContent = document.getElementById("infobar-content");
+
 var gameplayLeft = document.getElementById("footerLeft").getElementsByClassName("gameplayLeft")[0];
 var gameplayRight = document.getElementById("footerCenter").getElementsByClassName("gameplayRight")[0];
-var scoreText = gameplayLeft.getElementsByClassName("textScore")[0];
+var scoreText = document.getElementById("current-score");
 var scoreLabel = gameplayLeft.getElementsByClassName("textScoreLabel")[0];
-var firstName = gameplayRight.getElementsByClassName("textGameplayFirst")[0];
-var lastName = gameplayRight.getElementsByClassName("textGameplayLast")[0];
+var firstName = infobarContent.getElementsByClassName("firstname")[0];
+var lastName = infobarContent.getElementsByClassName("lastname")[0];
 var footerWidth;
 
 function UIGameplayAnimateIn()
 {
+    turnOnGameplay();
+
     footerWidth = initWaitingLeftWidth;
     footerCenter.style.width = initWaitingLeftWidth + "px";
     //console.log(footerWidth);
@@ -62,6 +66,8 @@ function UIGameplayAnimateOut()
     TweenMax.to(footerCenter, textFadeTime, {top:200, onComplete: turnOffDisplay, delay:2});
     TweenMax.to(firstName, textFadeTime, {opacity:1, delay: 2.1, left:footerWidth + 300});
     TweenMax.to(lastName, textFadeTime, {opacity:1, delay: 2.2, left:footerWidth + 300});
+
+    turnOffGameplay();
 }
 
 function UIGameplayUpdateScore(scoreInput)
@@ -99,6 +105,18 @@ function UIGameplayAnimateBadgeOff()
 {
     TweenMax.to(comboBadge, 0.1, {opacity: 0});
 }
+
+function turnOnGameplay()
+{
+    changeVisibility('gameplay-state', 'visible');
+    changeDisplay('gameplay-state', 'block');
+}
+function turnOffGameplay()
+{
+  changeVisibility('gameplay-state','hidden');
+  changeDisplay('gameplay-state', 'none');
+}
+
 
 function turnOffDisplay()
 {

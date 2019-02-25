@@ -155,6 +155,18 @@ function UIResultsAnimateOut()
     currentScore = 0;
 }
 
+function turnOnResults()
+{
+    changeVisibility('results-state', 'visible');
+    changeDisplay('results-state', 'block');
+}
+function turnOffResults()
+{
+  changeVisibility('results-state','hidden');
+  changeDisplay('results-state', 'none');
+}
+
+
 function UIResultsUpdateName(name)
 {
     currentName = name;

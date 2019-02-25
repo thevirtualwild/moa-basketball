@@ -15,9 +15,15 @@ var attractRightStep1 = document.getElementById("footerLeft").getElementsByClass
 var attractLeftStep2 = document.getElementById("footerCenter").getElementsByClassName("attractLeft")[0];
 var attractRightStep2 = document.getElementById("footerCenter").getElementsByClassName("attractRight")[0];
 
+var gameCodeText = document.getElementById("gamecode-text");
+var textingCode = document.getElementById("texting-code");
+var textingNumber = document.getElementById("texting-number");
+
 var waitingLeft = document.getElementById("footerLeft").getElementsByClassName("waitingLeft")[0];
 var waitingRight = document.getElementById("footerCenter").getElementsByClassName("waitingRight")[0];
 var textWaiting = waitingRight.getElementsByClassName("textWaiting")[0];
+
+var attractItems = document.getElementsByClassName("attract-state");
 
 var initFooterLeftWidth;
 var initFooterCenterWidth;
@@ -61,6 +67,8 @@ function UIAttractAnimateOut()
 
 function turnOnAttract()
 {
+    changeVisibility('attract-state', 'visible');
+    changeDisplay('attract-state', 'block');
 
     attractLeftStep1.style.display = "inline";
     attractRightStep1.style.display = "inline";
@@ -95,6 +103,9 @@ function turnOnAttract()
 
 function turnOffAttract()
 {
+    changeVisibility('attract-state', 'hidden');
+    changeDisplay('attract-state', 'none');
+
     attractLeftStep1.style.display = "none";
     attractRightStep1.style.display = "none";
     attractLeftStep2.style.display = "none";
@@ -105,7 +116,14 @@ function turnOffAttract()
 
 function UIAttractUpdateCourtName(name)
 {
-    attractRightStep2.innerHTML = "<h2>THEN ENTER</h2><h2>CODE '<span id=\"courtCode\">" + name + "</span>'</h2>";
+    gameCodeText.innerHTML = name;
+
+    UIAttractUpdateTextingInfo(texting_code, texting_number);
+}
+function UIAttractUpdateTextingInfo(text_code, text_num)
+{
+    textingCode.innerHTML = text_code;
+    textingNumber.innerHTML = text_num;
 }
 
 function animatingOff()

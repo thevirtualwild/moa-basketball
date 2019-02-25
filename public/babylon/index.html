@@ -24,21 +24,86 @@
     <img src="assets/UI/Common/moa-ribbons.png">
   </div>
   <div id="screen-wrapper">
-    <div id="instructions">
-      <div id="template">
-        <img src="assets/UI/D4template.png" id="templateImg">
-      </div>
-      <div id="scoreLabel"></div>
-      <div id="attractLabel"></div>
-      <div id="fpsLabel"></div>
-      <div id="fpsLabel-bot"></div>
-      <div id="permanentGameBranding">
-        <header>
-          <div id="titleTopLeft">
-            <img src="assets/UI/Common/LogoLights.png" id="titleLights">
-            <img src="assets/UI/Common/ShotClockLogo.png" id="titleLogo">
+    <div id="infobar">
+      <header id="infobar-header">
+        <img src="assets/UI/Common/ShotClockLogoGreyShad.png" id="titleLogo">
+      </header>
+      <div id="info-container">
+        <div id="infobar-content">
+          <div class="attract-state">
+            <div id="texting-instructions">
+              <div class="general-text">Text the word</div>
+              <div class="emphasis-text" id="texting-code">BBALL</div>
+              <div class="general-text small-height">to</div>
+              <div class="emphasis-text" id="texting-number">12345</div>
+            </div>
+            <hr />
+            <div id="gamecode-instructions">
+              <div class="general-text">Then Enter</div>
+              <div class="general-text">Game Code</div>
+            </div>
           </div>
-        </header>
+          <div class="waiting-state">
+            <div class="general-text">Waiting</div>
+            <div class="general-text">For</div>
+            <div class="general-text">Other</div>
+            <div class="general-text">Players</div>
+          </div>
+          <div class="gameplay-state">
+            <div class="playername-container">
+              <div class="firstname">First</div>
+              <div class="lastname">Last</div>
+            </div>
+          </div>
+          <div class="results-state">
+            <div class="playername-container">
+              <div class="winner-label">Game Winner</div>
+              <div class="firstname">First</div>
+              <div class="lastname">Last</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="ribbon">
+          <div id="ribbon-container">
+            <div class="gameplay-state">
+              <div id="score-label" class="ribbon-label general-text small-height">Score</div>
+            </div>
+            <div class="dropshadow-container">
+              <div id="ribbon-background" class="emphasis-text">
+                <div class="attract-state">
+                  <div id="gamecode-text" class="ribbon-text">COURT</div>
+                </div>
+                <div class="waiting-state">
+                  <div id="waiting-timer" class="ribbon-text">30</div>
+                </div>
+                <div class="gameplay-state">
+                  <div id="current-score" class="ribbon-text">0</div>
+                </div>
+                <div class="results-state">
+                  <div id="winner-stats">
+                    <div class="playerscore ribbon-text">
+                      <div class="stat-label">Score</div>
+                      <div class="stat-number">0</div>
+                    </div>
+                    <div class="playerstreak ribbon-text">
+                      <div class="stat-label">Streak</div>
+                      <div class="stat-number">5</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="labels">
+        <div id="scoreLabel"></div>
+        <div id="attractLabel"></div>
+        <div id="fpsLabel"></div>
+        <div id="fpsLabel-bot"></div>
+      </div>
+      <div id="permanentGameBranding">
 
         <div id="inner">
           <div id="container">
@@ -170,12 +235,39 @@
         </footer>
 
       </div>
-      <div class="to-show" style="display:block;">
-        <h2 style="display:block;">Test Instructions Here</h2>
-      </div>
     </div>
     <div id="game-container">
       <div id="game-overlay">
+        <div id="animation-container">
+            <div id="left-lights">
+                <div class="light-container">
+                  <div class="large-rectangle" id="light1"></div>
+                  <div class="small-rectangle" id="light2"></div>
+                </div>
+            </div>
+            <div id="right-lights">
+              <div class="light-container">
+                <div class="small-rectangle" id="light3"></div>
+                <div class="large-rectangle" id="light4"></div>
+              </div>
+          </div>
+        </div>
+        <div class="gameplay-state">
+          <div id="score-bonus">
+            <div id="bonus-amount"><span id="bonus-num">8</span>X</div>
+            <div id="bonus-text">Bonus</div>
+          </div>
+        </div>
+        <div id="gameplay-flavortext">
+          <div class="attract-state">
+            <div class="top">Play</div>
+            <div class="bottom">Now!</div>
+          </div>
+        </div>
+        <div id="sponsorArea">
+          <div id="sponsorGround"></div>
+          <img src="assets/UI/Common/MoALogoDiag.png" id="sponsorLogo">
+        </div>
       </div>
       <canvas id="canvas"></canvas>
     </div>
@@ -263,6 +355,7 @@
   <script src="/babylon/assets/babylon.cellMaterial.js"></script>
   <script src="/babylon/assets/babylon.simpleMaterial.js"></script>
   <script src="/babylon/scripts/playerInfo.js"></script>
+  <script src="/babylon/scripts/UI/state_manager.js"></script>
   <script src="/babylon/scripts/UI/attract.js"></script>
   <script src="/babylon/scripts/UI/waiting.js"></script>
   <script src="/babylon/scripts/UI/gameplay.js"></script>

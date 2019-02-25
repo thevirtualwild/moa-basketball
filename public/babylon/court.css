@@ -1,41 +1,3 @@
-/*
-$yellow1: #f8d133; $yellow2: rgb(239,173,20);
-$green1: #a5ce37; $green2: rgb(56, 171, 37);
-$blue1: #0095b6; $blue2: rgb(0, 107, 138);
-$pink1: #f43886; $pink2: rgb(158, 2, 91);
-$orange1: #faab18; $orange2: rgb(241, 99, 34);
-*/
-
-
-
-
-@font-face {
-  font-family: 'Gobold';
-  src: url("assets/Fonts/GoboldLight.otf");
-}
-@font-face {
-  font-family: 'Gobold';
-  src: url("assets/Fonts/GoboldBold.otf");
-  font-weight: bold;
-}
-@font-face {
-  font-family: 'Gobold';
-  src: url("assets/Fonts/GoboldBoldItalic.otf");
-  font-weight: bold;
-  font-style: italic;
-}
-@font-face {
-  font-family: 'Gobold';
-  src: url("assets/Fonts/GoboldLightItalic.otf");
-  font-style: italic;
-}
-@font-face {
-  font-family: 'XScale';
-  src: url("assets/Fonts/X-SCALE_.TTF");
-}
-
-
-
 @font-face {
   font-family: 'Interstate';
   font-weight: 500;
@@ -50,30 +12,11 @@ $orange1: #faab18; $orange2: rgb(241, 99, 34);
   font-family: 'Fresh Marker';
   src: url("assets/Fonts/freshmarker.ttf");
 }
-
-
-
-
-
 * {
   box-sizing: border-box;
-  font-family: "Gobold";
+  font-family: "Interstate";
 }
 
-/**
- * Canvas
- */
-/*
-.whiteboard {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-}
-*/
 html, body {
   height: 100%;
   margin: 0;
@@ -96,45 +39,8 @@ ul {
   padding: 0;
 }
 
-#screen-overlay {
-  background:white;
-  padding:60px;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-}
-#screen-overlay img {
-  width:100%;
-  height:100%;
-  object-fit: contain;
-}
-#screen-wrapper {
-  position:absolute;
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
-}
-
-#instructions {
-  width:25%;
-  height:100%;
-  float:left;
-  position:relative;
-  background: white;
-}
-
-#game-container {
-  width: 75%;
-  height: 100%;
-  float: left;
-  position: relative;
-}
 canvas {
-  width:100%;
+  width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
@@ -746,22 +652,57 @@ footer #footerRight img#sponsorGround {
   font-weight: 100;
 }
 
-/*# sourceMappingURL=court.css.map */
-
-
-
-
 #template {
   display: none !important;
 }
 
+#scoreLabel, #attractLabel, #fpsLabel, #fpsLabel-bot {
+  display: none;
+}
 
-#instructions {
+#permanentGameBranding {
+  display: none;
+}
+
+#screen-overlay {
+  background: white;
+  padding: 60px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+#screen-overlay img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#screen-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.attract-state, .waiting-state, .gameplay-state, .results-state {
+  visibility: hidden;
+  display: none;
+}
+
+#infobar {
   width: 29%;
   padding: 0 50px;
   z-index: 100;
+  display: inline-block;
+  position: relative;
+  height: 100%;
+  float: left;
 }
-#instructions:before {
+#infobar:before {
   content: '';
   display: block;
   height: 100%;
@@ -772,120 +713,206 @@ footer #footerRight img#sponsorGround {
   z-index: -1;
   opacity: 1;
 }
-#instructions * {
-  /* display: none; */
-}
-#instructions .to-show {
-  margin-top: 20%;
+#infobar #infobar-header {
   text-align: center;
 }
-#scoreLabel, #attractLabel, #fpsLabel, #fpsLabel-bot {
-  display:none;
-}
-
-#gameLogo {
-  text-align: center;
-}
-
-#texting-info *, #gamecode-info * {
-  font-family:'Interstate' !important;
-}
-#texting-info, #gamecode-info {
-  text-align: center;
+#infobar .general-text, #infobar .emphasis-text {
   font-size: 48px;
   line-height: 1;
-  text-transform: uppercase;
+  font-weight: 500;
   color: #333;
+  text-transform: uppercase;
 }
-.emphasis-text {
+#infobar .general-text.small-height, #infobar .small-height.emphasis-text {
+  line-height: 0.55;
+  margin-bottom: 10px;
+}
+#infobar .emphasis-text {
   font-size: 120px;
-  line-height:1.05;
+  line-height: 1.05;
   font-weight: 700;
   color: #010101;
 }
-#texting-info .general-text.small-height {
-  line-height: 0.55;
-  margin-bottom:10px;
+#infobar #info-container #texting-instructions, #infobar #info-container #gamecode-instructions {
+  text-align: center;
 }
-
-#permanentGameBranding {
-  display:none;
-}
-
-hr {
+#infobar #info-container hr {
   height: 6px;
   background: #333;
   margin-bottom: 25px;
-  margin-top:10px;
+  margin-top: 10px;
 }
-
-#game-overlay {
-  position: absolute;
-  height: 100%;
-  width: 100%;
+#infobar #info-container .waiting-state {
+  margin-top: 100px;
 }
-#sponsorArea {
-  position: absolute;
-  bottom: 40px;
-  right: 0;
-  height: 200px;
-  width: 255px;
-  filter: drop-shadow(-25px 10px 5px rgba(0,0,0,0.5));
+#infobar #info-container .waiting-state .general-text, #infobar #info-container .waiting-state .emphasis-text {
+  font-size: 64px;
+  text-align: center;
 }
-#sponsorGround {
-  height: 100%;
-  width: 100%;
-  background: white;
-  clip-path: polygon(26% 0, 100% 0%,100% 100%, 0% 100%);
+#infobar #info-container .results-state .playername-container {
+  margin-top: 70px;
 }
-#sponsorLogo {
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 23px 20px;
+#infobar #info-container .results-state .winner-label {
+  text-align: center;
+  color: #333;
+  font-size: 38px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
 }
-
-
-/*
-$yellow1: #f8d133;
-$green1: #a5ce37;
-$blue1: #0095b6;
-$pink1: #f43886;
-$orange1: #faab18;
-*/
-
-
-#gamecode-container {
+#infobar #info-container .playername-container {
+  margin-top: 100px;
+}
+#infobar #info-container .firstname, #infobar #info-container .lastname {
+  font-size: 80px;
+  font-family: 'Fresh Marker';
+  transform: rotate(-10deg);
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+  color: #000;
+}
+#infobar #info-container #ribbon #ribbon-container {
   position: absolute;
   width: 115%;
   z-index: 999;
   bottom: 40px;
   margin-left: -50px;
   margin-right: -50px;
-  filter: drop-shadow(-25px 10px 5px rgba(0,0,0,0.5));
 }
-#gamecode-background {
+#infobar #info-container #ribbon #ribbon-container .dropshadow-container {
+  filter: drop-shadow(-25px 10px 5px rgba(0, 0, 0, 0.5));
+}
+#infobar #info-container #ribbon #ribbon-container .ribbon-label {
+  font-size: 30px;
+  padding: 0 10px 5px;
+}
+#infobar #info-container #ribbon #ribbon-container #ribbon-background {
+  background: linear-gradient(-90deg, #a5ce37, #38ab25);
+  /* background-size: 400% 400%; */
+  /* -webkit-animation: Gradient 8s ease infinite;
+  -moz-animation: Gradient 8s ease infinite;
+  animation: Gradient 8s ease infinite; */
+  padding-right: 13%;
+  clip-path: polygon(0% 0, 100% 0%, 89.5% 100%, 0% 100%);
+  -webkit-clip-path: polygon(0% 0, 100% 0%, 89.5% 100%, 0% 100%);
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .ribbon-text {
+  text-align: center;
   font-size: 143px;
   color: white;
   line-height: 1.4;
-
-  background: linear-gradient(-90deg, #a5ce37, rgb(56, 171, 37));
-	/* background-size: 400% 400%; */
-	/* -webkit-animation: Gradient 8s ease infinite;
-	-moz-animation: Gradient 8s ease infinite;
-	animation: Gradient 8s ease infinite; */
-
-
-  padding-right: 15%;
-  clip-path: polygon(0% 0, 100% 0%, 89.5% 100%, 0% 100%);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state {
+  width: 100%;
+}
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats .ribbon-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 60px !important;
+  padding: 0 30px;
+  font-weight: normal;
+  line-height: 1.3 !important;
+}
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats .stat-number {
+  font-weight: bold;
+  font-size: 75px;
+  line-height: 1;
+  margin-top: -10px;
 }
 
-#info-container {
-  /* bottom: 40px; */
+#game-container {
+  width: 71%;
+  position: relative;
+  display: inline-block;
+  height: 100%;
+  float: right;
+  clear: none;
 }
-
-#gameplay-flavortext {
+#game-container #game-overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+#game-container #game-overlay #animation-container .large-rectangle, #game-container #game-overlay #animation-container .small-rectangle {
+  background: linear-gradient(-90deg, #a5ce37, #38ab25);
+  transform: rotate(-72deg);
+  opacity: .5;
+}
+#game-container #game-overlay #animation-container .light-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+#game-container #game-overlay #animation-container .light-container .large-rectangle {
+  height: 288px;
+  width: 1500px;
+}
+#game-container #game-overlay #animation-container .light-container .small-rectangle {
+  height: 35px;
+  width: 1000px;
+}
+#game-container #game-overlay #animation-container #right-lights .large-rectangle, #game-container #game-overlay #animation-container #left-lights .small-rectangle {
+  background: linear-gradient(90deg, #a5ce37, #38ab25);
+}
+#game-container #game-overlay #animation-container #left-lights {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 300px;
+  position: absolute;
+}
+#game-container #game-overlay #animation-container #left-lights .large-rectangle {
+  transform: rotate(-72deg) translateY(-763px);
+}
+#game-container #game-overlay #animation-container #left-lights .small-rectangle {
+  transform: rotate(-72deg) translateY(-384px) translateX(-580px);
+}
+#game-container #game-overlay #animation-container #right-lights {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 300px;
+  position: absolute;
+}
+#game-container #game-overlay #animation-container #right-lights .large-rectangle {
+  transform: rotate(-72deg) translateY(-292px) translateX(-400px);
+}
+#game-container #game-overlay #animation-container #right-lights .small-rectangle {
+  transform: rotate(-72deg) translateY(-199px) translateX(-220px);
+}
+#game-container #game-overlay #score-bonus {
+  position: absolute;
+  color: white;
+  right: 160px;
+  top: 240px;
+  font-size: 80px;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+  line-height: .8;
+}
+#game-container #game-overlay #score-bonus #bonus-amount {
+  font-weight: normal;
+}
+#game-container #game-overlay #score-bonus #bonus-amount #bonus-num {
+  font-size: 110px;
+}
+#game-container #game-overlay #gameplay-flavortext {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -894,81 +921,39 @@ $orange1: #faab18;
   font-family: 'Fresh Marker' !important;
   font-size: 200px;
 }
-
-#gameplay-flavortext .top, #gameplay-flavortext .bottom {
+#game-container #game-overlay #gameplay-flavortext * {
   font-family: inherit;
   text-transform: uppercase;
   line-height: 1;
 }
-
-#gameplay-flavortext .top {
+#game-container #game-overlay #gameplay-flavortext .top {
   transform: rotate(-14deg) translate(-130px, -15px);
 }
-
-#gameplay-flavortext .bottom {
+#game-container #game-overlay #gameplay-flavortext .bottom {
   transform: rotate(-14deg) translate(130px, 0px);
 }
-
-
-
-.large-rectangle, .small-rectangle {
-    background: linear-gradient(-90deg, #a5ce37, rgb(56, 171, 37));
-    transform:rotate(-72deg);
-    opacity:.5;
+#game-container #game-overlay #sponsorArea {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  height: 200px;
+  width: 255px;
+  filter: drop-shadow(-25px 10px 5px rgba(0, 0, 0, 0.5));
 }
-#right-lights .large-rectangle, #left-lights .small-rectangle {
-  background: linear-gradient(90deg, #a5ce37, rgb(56, 171, 37));
+#game-container #game-overlay #sponsorArea #sponsorGround {
+  height: 100%;
+  width: 100%;
+  background: white;
+  clip-path: polygon(26% 0%, 100% 0%, 100% 100%, 0% 100%);
+  -webkit-clip-path: polygon(26% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
-.large-rectangle {
-    height: 288px;
-    width: 1500px;
+#game-container #game-overlay #sponsorArea #sponsorLogo {
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 23px 20px;
 }
-
-.small-rectangle {
-    height: 35px;
-    width: 1000px;
-}
-
-div#left-lights {
-    left: 0;
-    top: 0;
-    bottom: 0;
-    height: 100%;
-    width: 300px;
-    position: absolute;
-}
-
-
-.light-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
-
-#left-lights .large-rectangle {
-    transform: rotate(-72deg) translateY(-763px);
-}
-#left-lights .small-rectangle {
-    transform: rotate(-72deg) translateY(-384px) translateX(-580px);
-}
-
-#right-lights .large-rectangle {
-    transform: rotate(-72deg) translateY(-292px) translateX(-400px);
-}
-#right-lights .small-rectangle {
-    transform: rotate(-72deg) translateY(-199px) translateX(-220px);
-}
-
-div#right-lights {
-    right: 0;
-    top: 0;
-    bottom: 0;
-    height: 100%;
-    width: 300px;
-    position: absolute;
-}
-
 
 /* .gamecode-text {
 } */
@@ -1009,13 +994,4 @@ div#right-lights {
 	}
 } */
 
-
-
-
-
-
-
-
-#game-container {
-  width:71%;
-}
+/*# sourceMappingURL=court.css.map */
