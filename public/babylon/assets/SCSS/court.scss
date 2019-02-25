@@ -1,16 +1,16 @@
 @font-face {
   font-family: 'Interstate';
   font-weight: 500;
-  src: url("assets/Fonts/interstate-regular.ttf");
+  src: font-url("assets/Fonts/interstate-regular.ttf");
 }
 @font-face {
   font-family: 'Interstate';
   font-weight: 700;
-  src: url("assets/Fonts/interstate-boldcompressed.otf");
+  src: font-url("assets/Fonts/interstate-boldcompressed.otf");
 }
 @font-face {
   font-family: 'Fresh Marker';
-  src: url("assets/Fonts/freshmarker.ttf");
+  src: font-url("assets/Fonts/freshmarker.ttf");
 }
 
 * {
@@ -943,7 +943,7 @@ $orange2: rgb(241, 99, 34);
           font-size: 30px;
           padding: 0 10px 5px;
         }
-        
+
         #ribbon-background {
           background: linear-gradient(-90deg, $green1, $green2);
         	/* background-size: 400% 400%; */
