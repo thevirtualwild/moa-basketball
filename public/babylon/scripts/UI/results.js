@@ -35,9 +35,9 @@ var winner_name = infobar_content.getElementsByClassName('results-state')[0].get
 var winner_name_first = winner_name.getElementsByClassName('firstname')[0];
 var winner_name_last = winner_name.getElementsByClassName('lastname')[0];
 
-var player_name = game_overlay.getElementsByClassName('results-state')[0].getElementsByClassName('playername-container')[0];
-var player_name_first = player_name.getElementsByClassName('firstname')[0];
-var player_name_last = player_name.getElementsByClassName('lastname')[0];
+// var player_name = game_overlay.getElementsByClassName('results-state')[0].getElementsByClassName('playername-container')[0];
+// var player_name_first = player_name.getElementsByClassName('firstname')[0];
+// var player_name_last = player_name.getElementsByClassName('lastname')[0];
 
 
 
