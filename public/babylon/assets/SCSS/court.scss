@@ -1,16 +1,16 @@
 @font-face {
   font-family: 'Interstate';
   font-weight: 500;
-  src: font-url("assets/Fonts/interstate-regular.ttf");
+  src: url("assets/Fonts/interstate-regular.ttf");
 }
 @font-face {
   font-family: 'Interstate';
   font-weight: 700;
-  src: font-url("assets/Fonts/interstate-boldcompressed.otf");
+  src: url("assets/Fonts/interstate-boldcompressed.otf");
 }
 @font-face {
   font-family: 'Fresh Marker';
-  src: font-url("assets/Fonts/freshmarker.ttf");
+  src: url("assets/Fonts/freshmarker.ttf");
 }
 
 * {
@@ -884,45 +884,48 @@ $orange2: rgb(241, 99, 34);
       text-align: center;
     }
 
-    hr {
-      height: 6px;
-      background: #333;
-      margin-bottom: 25px;
-      margin-top:10px;
-    }
+    #infobar-content {
 
-    .waiting-state {
-      margin-top:100px;
-
-      .general-text {
-        font-size: 64px;
-        text-align: center;
+      hr {
+        height: 6px;
+        background: #333;
+        margin-bottom: 25px;
+        margin-top:10px;
       }
-    }
 
-    .results-state {
+      .waiting-state {
+        margin-top:100px;
+
+        .general-text {
+          font-size: 64px;
+          text-align: center;
+        }
+      }
+
+      .results-state {
+        .playername-container {
+          margin-top: 70px;
+        }
+        .winner-label {
+          text-align: center;
+          color: #333;
+          font-size: 38px;
+          text-transform: uppercase;
+          margin-bottom: 30px;
+        }
+      }
       .playername-container {
-        margin-top: 70px;
+        margin-top:100px;
       }
-      .winner-label {
-        text-align: center;
-        color: #333;
-        font-size: 38px;
+      .firstname,.lastname {
+        font-size: 80px;
+        font-family: 'Fresh Marker';
+        transform: rotate(-10deg);
+        line-height:1.1;
+        text-align:center;
         text-transform: uppercase;
-        margin-bottom: 30px;
+        color: #000;
       }
-    }
-    .playername-container {
-      margin-top:100px;
-    }
-    .firstname,.lastname {
-      font-size: 80px;
-      font-family: 'Fresh Marker';
-      transform: rotate(-10deg);
-      line-height:1.1;
-      text-align:center;
-      text-transform: uppercase;
-      color: #000;
     }
 
     #ribbon {
@@ -980,13 +983,14 @@ $orange2: rgb(241, 99, 34);
               flex-direction: column;
               width: 100%;
 
-              .ribbon-text {
+              .stat-text {
                 display: flex;
                 justify-content: space-between;
                 font-size: 60px !important;
                 padding: 0 30px;
                 font-weight: normal;
                 line-height: 1.3 !important;
+                color: white;
               }
 
               .stat-number {
@@ -1050,6 +1054,7 @@ $orange2: rgb(241, 99, 34);
         height: 100%;
         width: 300px;
         position: absolute;
+        z-index:-1;
 
         .large-rectangle {
             transform: rotate(-72deg) translateY(-763px);
@@ -1065,6 +1070,7 @@ $orange2: rgb(241, 99, 34);
         height: 100%;
         width: 300px;
         position: absolute;
+        z-index:-1;
 
         .large-rectangle {
             transform: rotate(-72deg) translateY(-292px) translateX(-400px);
@@ -1095,14 +1101,47 @@ $orange2: rgb(241, 99, 34);
       }
     }
 
+    .results-state {
+      margin-top: 200px;
+    }
+
+    .flavortext {
+      color: white;
+      font-family: 'Fresh Marker' !important;
+      font-size: 200px;
+      text-align: center;
+      text-transform: uppercase;
+
+      transform: rotate(-14deg);
+    }
+    #player-stats {
+      @extend #winner-stats;
+      width: 558px;
+      float: right;
+      margin-right: 60px;
+
+      .stat-text {
+        display: flex;
+        justify-content: space-between;
+        font-size: 60px !important;
+        padding: 0 30px;
+        font-weight: normal;
+        line-height: 1.3 !important;
+        color: white;
+      }
+
+      .stat-number {
+        font-weight: bold;
+        font-size: 75px;
+        line-height: 1;
+        margin-top: -10px;
+      }
+    }
     #gameplay-flavortext {
       position: absolute;
       bottom: 0;
       width: 100%;
       text-align: center;
-      color: white;
-      font-family: 'Fresh Marker' !important;
-      font-size: 200px;
 
       * {
         font-family: inherit;

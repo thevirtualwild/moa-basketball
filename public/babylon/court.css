@@ -1,16 +1,16 @@
 @font-face {
   font-family: 'Interstate';
   font-weight: 500;
-  src: font-url("assets/Fonts/interstate-regular.ttf");
+  src: url("assets/Fonts/interstate-regular.ttf");
 }
 @font-face {
   font-family: 'Interstate';
   font-weight: 700;
-  src: font-url("assets/Fonts/interstate-boldcompressed.otf");
+  src: url("assets/Fonts/interstate-boldcompressed.otf");
 }
 @font-face {
   font-family: 'Fresh Marker';
-  src: font-url("assets/Fonts/freshmarker.ttf");
+  src: url("assets/Fonts/freshmarker.ttf");
 }
 * {
   box-sizing: border-box;
@@ -736,33 +736,33 @@ footer #footerRight img#sponsorGround {
 #infobar #info-container #texting-instructions, #infobar #info-container #gamecode-instructions {
   text-align: center;
 }
-#infobar #info-container hr {
+#infobar #info-container #infobar-content hr {
   height: 6px;
   background: #333;
   margin-bottom: 25px;
   margin-top: 10px;
 }
-#infobar #info-container .waiting-state {
+#infobar #info-container #infobar-content .waiting-state {
   margin-top: 100px;
 }
-#infobar #info-container .waiting-state .general-text, #infobar #info-container .waiting-state .emphasis-text {
+#infobar #info-container #infobar-content .waiting-state .general-text, #infobar #info-container #infobar-content .waiting-state .emphasis-text {
   font-size: 64px;
   text-align: center;
 }
-#infobar #info-container .results-state .playername-container {
+#infobar #info-container #infobar-content .results-state .playername-container {
   margin-top: 70px;
 }
-#infobar #info-container .results-state .winner-label {
+#infobar #info-container #infobar-content .results-state .winner-label {
   text-align: center;
   color: #333;
   font-size: 38px;
   text-transform: uppercase;
   margin-bottom: 30px;
 }
-#infobar #info-container .playername-container {
+#infobar #info-container #infobar-content .playername-container {
   margin-top: 100px;
 }
-#infobar #info-container .firstname, #infobar #info-container .lastname {
+#infobar #info-container #infobar-content .firstname, #infobar #info-container #infobar-content .lastname {
   font-size: 80px;
   font-family: 'Fresh Marker';
   transform: rotate(-10deg);
@@ -813,20 +813,21 @@ footer #footerRight img#sponsorGround {
 #infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state {
   width: 100%;
 }
-#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats {
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats, #infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #game-container #game-overlay #player-stats, #game-container #game-overlay #infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #player-stats {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
-#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats .ribbon-text {
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats .stat-text, #infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #game-container #game-overlay #player-stats .stat-text, #game-container #game-overlay #infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #player-stats .stat-text {
   display: flex;
   justify-content: space-between;
   font-size: 60px !important;
   padding: 0 30px;
   font-weight: normal;
   line-height: 1.3 !important;
+  color: white;
 }
-#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats .stat-number {
+#infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #winner-stats .stat-number, #infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #game-container #game-overlay #player-stats .stat-number, #game-container #game-overlay #infobar #info-container #ribbon #ribbon-container #ribbon-background .results-state #player-stats .stat-number {
   font-weight: bold;
   font-size: 75px;
   line-height: 1;
@@ -874,6 +875,7 @@ footer #footerRight img#sponsorGround {
   height: 100%;
   width: 300px;
   position: absolute;
+  z-index: -1;
 }
 #game-container #game-overlay #animation-container #left-lights .large-rectangle {
   transform: rotate(-72deg) translateY(-763px);
@@ -888,6 +890,7 @@ footer #footerRight img#sponsorGround {
   height: 100%;
   width: 300px;
   position: absolute;
+  z-index: -1;
 }
 #game-container #game-overlay #animation-container #right-lights .large-rectangle {
   transform: rotate(-72deg) translateY(-292px) translateX(-400px);
@@ -912,14 +915,42 @@ footer #footerRight img#sponsorGround {
 #game-container #game-overlay #score-bonus #bonus-amount #bonus-num {
   font-size: 110px;
 }
+#game-container #game-overlay .results-state {
+  margin-top: 200px;
+}
+#game-container #game-overlay .flavortext {
+  color: white;
+  font-family: 'Fresh Marker' !important;
+  font-size: 200px;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(-14deg);
+}
+#game-container #game-overlay #player-stats {
+  width: 558px;
+  float: right;
+  margin-right: 60px;
+}
+#game-container #game-overlay #player-stats .stat-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 60px !important;
+  padding: 0 30px;
+  font-weight: normal;
+  line-height: 1.3 !important;
+  color: white;
+}
+#game-container #game-overlay #player-stats .stat-number {
+  font-weight: bold;
+  font-size: 75px;
+  line-height: 1;
+  margin-top: -10px;
+}
 #game-container #game-overlay #gameplay-flavortext {
   position: absolute;
   bottom: 0;
   width: 100%;
   text-align: center;
-  color: white;
-  font-family: 'Fresh Marker' !important;
-  font-size: 200px;
 }
 #game-container #game-overlay #gameplay-flavortext * {
   font-family: inherit;

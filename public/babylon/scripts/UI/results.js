@@ -12,6 +12,37 @@ var results = document.getElementById("results");
 var topScore = document.getElementById("topScore");
 var yourScore = document.getElementById("yourScore");
 
+
+
+var infobar_content = document.getElementById('infobar-content');
+var game_overlay = document.getElementById('game-overlay');
+
+
+var winner_stats = document.getElementById('winner-stats');
+var winner_score = winner_stats.getElementsByClassName('playerscore')[0];
+var winner_streak = winner_stats.getElementsByClassName('playerstreak')[0];
+var winner_score_num = winner_score.getElementsByClassName('stat-num')[0];
+var winner_streak_num = winner_streak.getElementsByClassName('stat-num')[0];
+
+var player_stats = document.getElementById('player-stats');
+var player_score = player_stats.getElementsByClassName('playerscore')[0];
+var player_streak = player_stats.getElementsByClassName('playerstreak')[0];
+var player_score_num = player_score.getElementsByClassName('stat-num')[0];
+var player_streak_num = player_streak.getElementsByClassName('stat-num')[0];
+
+
+var winner_name = infobar_content.getElementsByClassName('results-state')[0].getElementsByClassName('playername-container')[0];
+var winner_name_first = winner_name.getElementsByClassName('firstname')[0];
+var winner_name_last = winner_name.getElementsByClassName('lastname')[0];
+
+var player_name = game_overlay.getElementsByClassName('results-state')[0].getElementsByClassName('playername-container')[0];
+var player_name_first = player_name.getElementsByClassName('firstname')[0];
+var player_name_last = player_name.getElementsByClassName('lastname')[0];
+
+
+
+
+
 var topFirstName = topScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("playerName")[0].getElementsByClassName("firstName")[0];
 var topLastName = topScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("playerName")[0].getElementsByClassName("lastName")[0];
 
@@ -73,82 +104,86 @@ var currentScore;
 var currentName;
 function UIResultsAnimateIn()
 {
+    turnOnResults();
+
     console.log("ANIMATE RESULTS IN");
     animating = false;
-    yourScore.style.opacity = 0;
-    topScore.style.opacity = 0;
-    playNow.style.opacity = 0;
-    comboBadge.style.opacity = 0;
+    // yourScore.style.opacity = 0;
+    // topScore.style.opacity = 0;
+    // playNow.style.opacity = 0;
+    // comboBadge.style.opacity = 0;
 
-    team1Name.style.color = primaryTeam.colorHex;
-    team2Name.style.color = secondaryTeam.colorHex;
-    team3Name.style.color = tertiaryTeam.colorHex;
+    // team1Name.style.color = primaryTeam.colorHex;
+    // team2Name.style.color = secondaryTeam.colorHex;
+    // team3Name.style.color = tertiaryTeam.colorHex;
+    //
+    // teamScores.style.opacity = 0;
+    // team1.style.opacity = 0;
+    // team2.style.opacity = 0;
+    // team3.style.opacity = 0;
 
-    teamScores.style.opacity = 0;
-    team1.style.opacity = 0;
-    team2.style.opacity = 0;
-    team3.style.opacity = 0;
+    // topScore.style.marginLeft = (width + "px").toString();
+    // yourScore.style.marginRight = (width + "px").toString();
+    //
+    // team1.style.marginTop = (height + "px").toString();
+    // team2.style.marginTop = (height + "px").toString();
+    // team3.style.marginTop = (height + "px").toString();
+    //
+    // footer.style.backgroundPositionY = "200px";
+    // footerLeft.style.top = "200px";
+    // footerCenter.style.top = "200px";
 
-    topScore.style.marginLeft = (width + "px").toString();
-    yourScore.style.marginRight = (width + "px").toString();
-
-    team1.style.marginTop = (height + "px").toString();
-    team2.style.marginTop = (height + "px").toString();
-    team3.style.marginTop = (height + "px").toString();
-
-    footer.style.backgroundPositionY = "200px";
-    footerLeft.style.top = "200px";
-    footerCenter.style.top = "200px";
-
-    results.style.display = "inline";
+    // results.style.display = "inline";
 
     inner.style.backgroundColor = "transparent";
 
-    TweenMax.to(inner, textFadeTime, {backgroundColor: "rgba(0,0,0,0.8)"});
+    // TweenMax.to(inner, textFadeTime, {backgroundColor: "rgba(0,0,0,0.8)"});
+    //
+    // TweenMax.to(topScore, textFadeTimeResults, {delay: textFadeTimeResults, marginLeft: 0, ease:Back.easeOut});
+    // TweenMax.to(topScore, textFadeTimeResults*2, {delay: textFadeTimeResults, opacity: 1});
 
-    TweenMax.to(topScore, textFadeTimeResults, {delay: textFadeTimeResults, marginLeft: 0, ease:Back.easeOut});
-    TweenMax.to(topScore, textFadeTimeResults*2, {delay: textFadeTimeResults, opacity: 1});
-
-    if(!winner)
-    {
-        console.log("TWEENING IN YOUR LOSER SCORE");
-        TweenMax.to(yourScore, textFadeTimeResults, {delay: textFadeTimeResults*2, marginRight: 0, ease:Back.easeOut});
-        TweenMax.to(yourScore, textFadeTimeResults*2, {delay: textFadeTimeResults*2, opacity: 1});
-    }
-
-    TweenMax.to(teamScores, textFadeTimeResults, {delay: textFadeTimeResults*3, opacity: 1});
-
-    TweenMax.to(team1, textFadeTimeResults, {delay: textFadeTimeResults*3.5, marginTop: 0, ease:Back.easeOut});
-    TweenMax.to(team1, textFadeTimeResults*2, {delay: textFadeTimeResults*3.5, opacity: 1});
-
-    TweenMax.to(team2, textFadeTimeResults, {delay: textFadeTime*3.7, marginTop: 0, ease:Back.easeOut});
-    TweenMax.to(team2, textFadeTimeResults*2, {delay: textFadeTime*3.7, opacity: 1});
-
-    TweenMax.to(team3, textFadeTimeResults, {delay: textFadeTimeResults*3.9, marginTop: 0, ease:Back.easeOut});
-    TweenMax.to(team3, textFadeTimeResults*2, {delay: textFadeTimeResults*3.9, opacity: 1});
+    // if(!winner)
+    // {
+    //     console.log("TWEENING IN YOUR LOSER SCORE");
+    //     TweenMax.to(yourScore, textFadeTimeResults, {delay: textFadeTimeResults*2, marginRight: 0, ease:Back.easeOut});
+    //     TweenMax.to(yourScore, textFadeTimeResults*2, {delay: textFadeTimeResults*2, opacity: 1});
+    // }
+    //
+    // TweenMax.to(teamScores, textFadeTimeResults, {delay: textFadeTimeResults*3, opacity: 1});
+    //
+    // TweenMax.to(team1, textFadeTimeResults, {delay: textFadeTimeResults*3.5, marginTop: 0, ease:Back.easeOut});
+    // TweenMax.to(team1, textFadeTimeResults*2, {delay: textFadeTimeResults*3.5, opacity: 1});
+    //
+    // TweenMax.to(team2, textFadeTimeResults, {delay: textFadeTime*3.7, marginTop: 0, ease:Back.easeOut});
+    // TweenMax.to(team2, textFadeTimeResults*2, {delay: textFadeTime*3.7, opacity: 1});
+    //
+    // TweenMax.to(team3, textFadeTimeResults, {delay: textFadeTimeResults*3.9, marginTop: 0, ease:Back.easeOut});
+    // TweenMax.to(team3, textFadeTimeResults*2, {delay: textFadeTimeResults*3.9, opacity: 1});
 }
 
 function UIResultsAnimateOut()
 {
     if(animating) return;
 
-    TweenMax.to(topScore, textFadeTimeResults, {delay: textFadeTimeResults, marginLeft: width, ease:Back.easeOut});
-    TweenMax.to(topScore, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
-    TweenMax.to(yourScore, textFadeTimeResults, {delay: textFadeTimeResults, marginRight: width, ease:Back.easeOut});
-    TweenMax.to(yourScore, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
+    // TweenMax.to(topScore, textFadeTimeResults, {delay: textFadeTimeResults, marginLeft: width, ease:Back.easeOut});
+    // TweenMax.to(topScore, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
+    // TweenMax.to(yourScore, textFadeTimeResults, {delay: textFadeTimeResults, marginRight: width, ease:Back.easeOut});
+    // TweenMax.to(yourScore, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
+    //
+    // TweenMax.to(teamScores, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
+    //
+    // TweenMax.to(team1, textFadeTimeResults, {delay: textFadeTimeResults, marginTop: height, ease:Back.easeOut});
+    // TweenMax.to(team1, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
+    //
+    // TweenMax.to(team2, textFadeTimeResults, {delay: textFadeTimeResults, marginTop: height, ease:Back.easeOut});
+    // TweenMax.to(team2, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
+    //
+    // TweenMax.to(team3, textFadeTimeResults, {delay: textFadeTimeResults, marginTop: height, ease:Back.easeOut});
+    // TweenMax.to(team3, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
+    //
+    // TweenMax.to(inner, textFadeTimeResults, {backgroundColor: "rgba(0,0,0,0.0)", delay:textFadeTimeResults});
 
-    TweenMax.to(teamScores, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
-
-    TweenMax.to(team1, textFadeTimeResults, {delay: textFadeTimeResults, marginTop: height, ease:Back.easeOut});
-    TweenMax.to(team1, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
-
-    TweenMax.to(team2, textFadeTimeResults, {delay: textFadeTimeResults, marginTop: height, ease:Back.easeOut});
-    TweenMax.to(team2, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
-
-    TweenMax.to(team3, textFadeTimeResults, {delay: textFadeTimeResults, marginTop: height, ease:Back.easeOut});
-    TweenMax.to(team3, textFadeTimeResults, {delay: textFadeTimeResults, opacity: 0});
-
-    TweenMax.to(inner, textFadeTimeResults, {backgroundColor: "rgba(0,0,0,0.0)", delay:textFadeTimeResults});
+    turnOffResults();
 
     animating = true;
 
@@ -170,20 +205,22 @@ function turnOffResults()
 function UIResultsUpdateName(name)
 {
     currentName = name;
-    yourFirstName.innerHTML = name.substr(0, name.indexOf(' '));
-    yourLastName.innerHTML = name.substr(name.indexOf(' ') + 1);
+    // yourFirstName.innerHTML = name.substr(0, name.indexOf(' '));
+    // yourLastName.innerHTML = name.substr(name.indexOf(' ') + 1);
 }
 
 function UIResultsUpdateScore(playerScore)
 {
-    if(playerScore === undefined){
-        currentScore = 0;
-        yourScoreText.innerHTML = currentScore.toString();
-    }
-    else {
-        currentScore = playerScore;
-        yourScoreText.innerHTML = playerScore.toString();
-    }
+    console.log('UIResultsUpdateScore:');
+    console.dir(playerScore);
+    // if(playerScore === undefined){
+    //     currentScore = 0;
+    //     yourScoreText.innerHTML = currentScore.toString();
+    // }
+    // else {
+    //     currentScore = playerScore;
+    //     yourScoreText.innerHTML = playerScore.toString();
+    // }
 
 }
 
@@ -191,10 +228,10 @@ function UIResultsSetData(data) {
     if(data.resultsdata.highscorer === undefined)
     {
         winner = true;
-        topScoreText.innerHTML = currentScore.toString();
-        topFirstName.innerHTML = currentName.substr(0, currentName.indexOf(' '));
-        topLastName.innerHTML = currentName.substr(currentName.indexOf(' ') + 1);
-        yourScore.style.display = "none";
+        // // topScoreText.innerHTML = currentScore.toString();
+        // // topFirstName.innerHTML = currentName.substr(0, currentName.indexOf(' '));
+        // // topLastName.innerHTML = currentName.substr(currentName.indexOf(' ') + 1);
+        // yourScore.style.display = "none";
         console.log("HI SCORER IS UNDEFINED");
     }
     else
@@ -202,47 +239,61 @@ function UIResultsSetData(data) {
 
         if(currentScore === undefined){
             currentScore = 0;
-            yourScoreText.innerHTML = currentScore.toString();
+            // yourScoreText.innerHTML = currentScore.toString();
         }
 
 
         if(currentScore >= data.resultsdata.highscorer.score)
         {
-            winner = true;
-            topScoreText.innerHTML = currentScore.toString();
-            topFirstName.innerHTML = currentName.substr(0, currentName.indexOf(' '));
-            topLastName.innerHTML = currentName.substr(currentName.indexOf(' ') + 1);
-            yourScore.style.display = "none";
-
-            console.log("YOU ARE HIGH SCORER " + currentScore + " top score " + data.resultsdata.highscorer.score);
-
+            ShowYouWonResults(data);
         }
         else
         {
-            winner = false;
-            var name = data.resultsdata.highscorer.player.username;
-            topFirstName.innerHTML = name.substr(0, name.indexOf(' '));
-            topLastName.innerHTML = name.substr(name.indexOf(' ') + 1);
-            topScoreText.innerHTML = data.resultsdata.highscorer.score;
-            yourScoreText.innerHTML = currentScore.toString();
-            yourScore.style.display = "block";
-            console.log("YOU LOST TO HIGH SCORER " + currentScore + " top score " + data.resultsdata.highscorer.score);
-
+            ShowYouLostResults(data);
         }
     }
 
-    for (ateam in data.resultsdata.teamscores) {
-        if(primaryTeam.name == data.resultsdata.teamscores[ateam].name) {
-            team1Name.innerHTML = data.resultsdata.teamscores[ateam].name;
-            team1Score.innerHTML = data.resultsdata.teamscores[ateam].score;
-        }
-        else if(secondaryTeam.name == data.resultsdata.teamscores[ateam].name) {
-            team2Name.innerHTML = data.resultsdata.teamscores[ateam].name;
-            team2Score.innerHTML = data.resultsdata.teamscores[ateam].score;
-        }
-        else if(tertiaryTeam.name == data.resultsdata.teamscores[ateam].name) {
-            team3Name.innerHTML = data.resultsdata.teamscores[ateam].name;
-            team3Score.innerHTML = data.resultsdata.teamscores[ateam].score;
-        }
-    }
+    // for (ateam in data.resultsdata.teamscores) {
+    //     if(primaryTeam.name == data.resultsdata.teamscores[ateam].name) {
+    //         team1Name.innerHTML = data.resultsdata.teamscores[ateam].name;
+    //         team1Score.innerHTML = data.resultsdata.teamscores[ateam].score;
+    //     }
+    //     else if(secondaryTeam.name == data.resultsdata.teamscores[ateam].name) {
+    //         team2Name.innerHTML = data.resultsdata.teamscores[ateam].name;
+    //         team2Score.innerHTML = data.resultsdata.teamscores[ateam].score;
+    //     }
+    //     else if(tertiaryTeam.name == data.resultsdata.teamscores[ateam].name) {
+    //         team3Name.innerHTML = data.resultsdata.teamscores[ateam].name;
+    //         team3Score.innerHTML = data.resultsdata.teamscores[ateam].score;
+    //     }
+    // }
+}
+
+
+function ShowYouWonResults(data) {
+  winner = true;
+  player_score_num.innerHTML = currentScore.toString();
+  player_name_first.innerHTML = currentName.substr(0, currentName.indexOf(' '));
+  player_name_last.innerHTML = currentName.substr(currentName.indexOf(' ') + 1);
+  winner_stats.style.display = "none";
+  winner_name.style.display = "none;"
+
+  console.log("YOU ARE HIGH SCORER " + currentScore + " top score " + data.resultsdata.highscorer.score);
+}
+function ShowYouLostResults(data) {
+  winner = false;
+
+  player_score_num.innerHTML = currentScore.toString();
+  // player_name_first.innerHTML = currentName.substr(0, currentName.indexOf(' '));
+  // player_name_last.innerHTML = currentName.substr(currentName.indexOf(' ') + 1);
+
+  // winner_stats.style.display = "none";
+  // winner_name.style.display = "none;"
+
+  var winnername = data.resultsdata.highscorer.player.username;
+  winner_name_first.innerHTML = winnername.substr(0, winnername.indexOf(' '));
+  winner_name_last.innerHTML = winnername.substr(winnername.indexOf(' ') + 1);
+
+  winner_score_num.innerHTML = data.resultsdata.highscorer.score;
+  console.log("YOU LOST TO HIGH SCORER " + currentScore + " top score " + data.resultsdata.highscorer.score);
 }
