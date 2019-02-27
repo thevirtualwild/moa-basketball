@@ -1,16 +1,16 @@
 @font-face {
   font-family: 'Interstate';
   font-weight: 500;
-  src: url("assets/Fonts/interstate-regular.ttf");
+  src: url("../../.fonts/interstate-regular.ttf");
 }
 @font-face {
   font-family: 'Interstate';
   font-weight: 700;
-  src: url("assets/Fonts/interstate-boldcompressed.otf");
+  src: url("../../.fonts/interstate-boldcompressed.otf");
 }
 @font-face {
   font-family: 'Fresh Marker';
-  src: url("assets/Fonts/freshmarker.ttf");
+  src: url("../../.fonts/freshmarker.ttf");
 }
 * {
   box-sizing: border-box;
