@@ -39,35 +39,6 @@ var winner_name_last = winner_name.getElementsByClassName('lastname')[0];
 // var player_name_first = player_name.getElementsByClassName('firstname')[0];
 // var player_name_last = player_name.getElementsByClassName('lastname')[0];
 
-
-
-
-
-var topFirstName = topScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("playerName")[0].getElementsByClassName("firstName")[0];
-var topLastName = topScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("playerName")[0].getElementsByClassName("lastName")[0];
-
-var yourFirstName = yourScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("playerName")[0].getElementsByClassName("firstName")[0];
-var yourLastName = yourScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("playerName")[0].getElementsByClassName("lastName")[0];
-
-var gameplayRight = document.getElementById("footerCenter").getElementsByClassName("gameplayRight")[0];
-
-var yourScoreText = yourScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("scoreNum")[0];
-var topScoreText = topScore.getElementsByClassName("scoreContainer")[0].getElementsByClassName("scoreNum")[0];
-
-var team1Name = document.getElementById("team1").getElementsByClassName("teamName")[0];
-var team2Name = document.getElementById("team2").getElementsByClassName("teamName")[0];
-var team3Name = document.getElementById("team3").getElementsByClassName("teamName")[0];
-
-var team1Score = document.getElementById("team1").getElementsByClassName("scoreNum")[0];
-var team2Score = document.getElementById("team2").getElementsByClassName("scoreNum")[0];
-var team3Score = document.getElementById("team3").getElementsByClassName("scoreNum")[0];
-
-var teamScores = document.getElementById("teamScores");
-
-var team1 = document.getElementById("team1");
-var team2 = document.getElementById("team2");
-var team3 = document.getElementById("team3");
-
 //UIResultsAnimateIn();
 //UIResultsAnimateOut();
 
@@ -108,32 +79,6 @@ function UIResultsAnimateIn()
 
     console.log("ANIMATE RESULTS IN");
     animating = false;
-    // yourScore.style.opacity = 0;
-    // topScore.style.opacity = 0;
-    // playNow.style.opacity = 0;
-    // comboBadge.style.opacity = 0;
-
-    // team1Name.style.color = primaryTeam.colorHex;
-    // team2Name.style.color = secondaryTeam.colorHex;
-    // team3Name.style.color = tertiaryTeam.colorHex;
-    //
-    // teamScores.style.opacity = 0;
-    // team1.style.opacity = 0;
-    // team2.style.opacity = 0;
-    // team3.style.opacity = 0;
-
-    // topScore.style.marginLeft = (width + "px").toString();
-    // yourScore.style.marginRight = (width + "px").toString();
-    //
-    // team1.style.marginTop = (height + "px").toString();
-    // team2.style.marginTop = (height + "px").toString();
-    // team3.style.marginTop = (height + "px").toString();
-    //
-    // footer.style.backgroundPositionY = "200px";
-    // footerLeft.style.top = "200px";
-    // footerCenter.style.top = "200px";
-
-    // results.style.display = "inline";
 
     inner.style.backgroundColor = "transparent";
 
@@ -213,14 +158,14 @@ function UIResultsUpdateScore(playerScore)
 {
     console.log('UIResultsUpdateScore:');
     console.dir(playerScore);
-    // if(playerScore === undefined){
-    //     currentScore = 0;
-    //     yourScoreText.innerHTML = currentScore.toString();
-    // }
-    // else {
-    //     currentScore = playerScore;
-    //     yourScoreText.innerHTML = playerScore.toString();
-    // }
+    if(playerScore === undefined){
+        currentScore = 0;
+        player_score_num.innerHTML = currentScore.toString();
+    }
+    else {
+        currentScore = playerScore;
+        player_score_num.innerHTML = playerScore.toString();
+    }
 
 }
 
@@ -228,7 +173,7 @@ function UIResultsSetData(data) {
     if(data.resultsdata.highscorer === undefined)
     {
         winner = true;
-        // // topScoreText.innerHTML = currentScore.toString();
+        winner_score_num.innerHTML = currentScore.toString();
         // // topFirstName.innerHTML = currentName.substr(0, currentName.indexOf(' '));
         // // topLastName.innerHTML = currentName.substr(currentName.indexOf(' ') + 1);
         // yourScore.style.display = "none";
@@ -239,7 +184,7 @@ function UIResultsSetData(data) {
 
         if(currentScore === undefined){
             currentScore = 0;
-            // yourScoreText.innerHTML = currentScore.toString();
+            player_score_num.innerHTML = currentScore.toString();
         }
 
 
@@ -252,21 +197,6 @@ function UIResultsSetData(data) {
             ShowYouLostResults(data);
         }
     }
-
-    // for (ateam in data.resultsdata.teamscores) {
-    //     if(primaryTeam.name == data.resultsdata.teamscores[ateam].name) {
-    //         team1Name.innerHTML = data.resultsdata.teamscores[ateam].name;
-    //         team1Score.innerHTML = data.resultsdata.teamscores[ateam].score;
-    //     }
-    //     else if(secondaryTeam.name == data.resultsdata.teamscores[ateam].name) {
-    //         team2Name.innerHTML = data.resultsdata.teamscores[ateam].name;
-    //         team2Score.innerHTML = data.resultsdata.teamscores[ateam].score;
-    //     }
-    //     else if(tertiaryTeam.name == data.resultsdata.teamscores[ateam].name) {
-    //         team3Name.innerHTML = data.resultsdata.teamscores[ateam].name;
-    //         team3Score.innerHTML = data.resultsdata.teamscores[ateam].score;
-    //     }
-    // }
 }
 
 
@@ -284,8 +214,6 @@ function ShowYouLostResults(data) {
   winner = false;
 
   player_score_num.innerHTML = currentScore.toString();
-  // player_name_first.innerHTML = currentName.substr(0, currentName.indexOf(' '));
-  // player_name_last.innerHTML = currentName.substr(currentName.indexOf(' ') + 1);
 
   // winner_stats.style.display = "none";
   // winner_name.style.display = "none;"
