@@ -442,7 +442,7 @@ socket.on('game already running', function() {
     console.log("game already running");
 });
 
-socket.on('game almost ready', function(courtName) {
+socket.on('game almost ready', function(gamedata) {
     //fade out customization screen
     //roll in ball;
 

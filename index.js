@@ -424,10 +424,15 @@ function onConnection(socket) {
             court: socket.court
           }
 
+          courtojoin.player = data;
+
+          console.log(courtojoin);
+
           // // // console.log("IS GAME IN PROGRESS? " + socket.gamenamesrunning);
           console.log('Player joining court:');
-
           console.dir(data);
+          console.log('JOINCOURT: before player joined court emit');
+          debugSocket(socket);
           socket.broadcast.to(socket.roomname).emit('player joined court', data);
           // // // // // console.log('socket.roomname - ' + socket.roomname);
 
@@ -558,11 +563,12 @@ function onConnection(socket) {
   function addCourtGameScore(courtgamedata) {
     var thisgamesroom = roomnames[socket.roomname];
     var thissocketgamename = thisgamesroom.gamename;
-    socket.gamename = thissocketgamename;
+    socket.game.name = thissocketgamename;
 
-    console.log('add score to database socket.gamename - ' + socket.gamename);
+    console.log('add courtgamescore to database - ' + socket.game.name);
     console.dir(courtgamedata);
-    courtgamedata.gamename = socket.gamename;
+    debugSocket(socket);
+    courtgamedata.gamename = socket.game.name;
 
     pushScoreToDatabase(courtgamedata);
 
@@ -815,7 +821,7 @@ function onConnection(socket) {
 
       if (courtmaster == socket.id) {
         // // // // console.log('this screen is master - ' + socket.id);
-        var testData = {
+        var courtMasterData = {
           courtname:socket.court.name,
           syncdata:data
         };
@@ -823,8 +829,8 @@ function onConnection(socket) {
         // // // // console.log("Sync with master called on : " + socket.court.name);
         // // // console.dir(testData);
           //// // // console.log("SYNC THE SLAVES");
-        socket.broadcast.to(socket.roomname).emit('sync with master', testData);
-        socket.emit('sync with master', testData);
+        socket.broadcast.to(socket.roomname).emit('sync with master', courtMasterData);
+        socket.emit('sync with master', courtMasterData);
       } else {
          // // // // console.log('someone else is master - ' + courtmaster);
       }
@@ -1057,7 +1063,7 @@ function onConnection(socket) {
 
   });
   socket.on('game almost ready', function(courtName) {
-    // console.log('Game Almost Ready Called by - ' + courtName);
+    console.log('Game Almost Ready Called by - ' + courtName);
 
     var thisgamesroom = roomnames[socket.roomname];
 
@@ -1095,24 +1101,23 @@ function onConnection(socket) {
 
   });
 
+  function createGameName(someRoom, someDate) {
+    var month = someDate.getMonth();
+    var day = someDate.getDate();
+    var hour = someDate.getHours();
+    var minutes = someDate.getMinutes();
+
+    var newgamename = someRoom.id + '_' + month + '_' + day + '_' + hour + '_' + minutes;
+
+    return newgamename;
+  }
+
   function startGame() {
     var thisgamesroom = roomnames[socket.roomname];
 
-    if (thisgamesroom.gamenum) {
-      thisgamesroom.gamenum += 1;
-    } else {
-      thisgamesroom.gamenum = 1;
-    }
-
     var newdate = new Date();
-    // var slicedate = newdate.toISOString().slice(0,10);
-    var month = newdate.getMonth();
-    var day = newdate.getDate();
-    var hour = newdate.getHours();
-    var minutes = newdate.getMinutes();
-    // var gameday = newdate.Date();
-    // var gametime = newdate.Time();
-    thisgamesroom.gamename = thisgamesroom.id + '_' + month + '_' + day + '_' + hour + '_' + minutes;
+
+    thisgamesroom.gamename = createGameName(thisgamesroom, newdate);
 
     console.log('---Step 2---');
     console.log('start game (current gamename)- ' + thisgamesroom.gamename);
@@ -1123,9 +1128,9 @@ function onConnection(socket) {
     }
     console.log(newGameObject);
     socket.game = newGameObject;
-    socket.gamename = thisgamesroom.gamename;
+    // socket.gamename = thisgamesroom.gamename;
 
-    allgames[socket.gamename] = socket.game;
+    allgames[socket.game.name] = socket.game;
 
     thisgamesroom.gamerunning = true;
     thisgamesroom.canjoingame = false;
@@ -1144,7 +1149,7 @@ function onConnection(socket) {
     // updateGameName(thisgamesroom.gamename);
 
     var gamedata = {
-      gamename: thisgamesroom.gamename,
+      // gamename: thisgamesroom.gamename,
       game: newGameObject
     }
 
@@ -1170,8 +1175,8 @@ function onConnection(socket) {
       fromY: exitY,
       xSpeed: xSpeed,
       ySpeed: ySpeed,
-        deviceWidth: deviceWidth,
-        deviceHeight: deviceHeight
+      deviceWidth: deviceWidth,
+      deviceHeight: deviceHeight
     }
 
     // // // // // // // // console.log('take shot');
@@ -1207,15 +1212,18 @@ function onConnection(socket) {
 
     var thisgamesroom = roomnames[socket.roomname];
     var thissocketgamename = thisgamesroom.gamename;
-    socket.gamename = thissocketgamename;
+    socket.game.name = thissocketgamename;
 
-    socketgame = socket.game;
+    gamedata = socket.game;
     console.log("Socket.game");
-    console.dir(socketgame);
+    console.dir(gamedata);
+    //
+    // thisgame = allgames[socket.gamename];
+    // console.log("Thisgame");
+    // console.dir(thisgame);
 
-    thisgame = allgames[socket.gamename];
-    console.log("Thisgame");
-    console.dir(thisgame);
+    allgames[socket.game.name] = gamedata;
+
 
     //
     // console.log('add score to database socket.gamename - ' + socket.gamename);
@@ -1274,7 +1282,8 @@ function onConnection(socket) {
   }
 
   function pushScoreForGameToDatabase(gamedata) {
-
+    console.log('PUSHSCOREFORGAME: gamedata to push');
+    console.dir(gamedata);
   }
 
   socket.on('room reset', function() {
@@ -1421,6 +1430,25 @@ function onConnection(socket) {
   // });
 
 }
+
+
+function debugSocket(somesocket) {
+  console.log('-----');
+  console.log('SOCKET_INFO: ' + somesocket.id);
+  console.log('- deviceIP -');
+  console.dir(somesocket.deviceIP);
+  console.log('- devicetype -');
+  console.dir(somesocket.devicetype);
+  console.log('- roomname -');
+  console.dir(somesocket.roomname);
+  console.log('- court -');
+  console.dir(somesocket.court);
+  console.log('- game -');
+  console.dir(somesocket.game);
+  console.log('-----');
+}
+
+
 
 io.on('connection', onConnection);
 
