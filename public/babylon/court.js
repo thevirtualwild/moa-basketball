@@ -1,35 +1,34 @@
-var socket = io();
+var socket              = io();
 
-var canvas = document.getElementById("canvas");
-var attractLabel = document.getElementById("attractLabel");
-var scoreLabel = document.getElementById("scoreLabel");
+var canvas              = document.getElementById("canvas");
+var attractLabel        = document.getElementById("attractLabel");
+var scoreLabel          = document.getElementById("scoreLabel");
 
-var engine = new BABYLON.Engine(canvas, true, null, false);
-var useCannon = true;
+var engine              = new BABYLON.Engine(canvas, true, null, false);
+var useCannon           = true;
 
-var gameStates = Object.freeze({"ATTRACT": 0, "WAITING": 1, "GAMEPLAY": 2, "RESULTS": 3, "INACTIVE": 4});
-var currentGameState = gameStates.ATTRACT;
+var gameStates          = Object.freeze({"ATTRACT": 0, "WAITING": 1, "GAMEPLAY": 2, "RESULTS": 3, "INACTIVE": 4});
+var currentGameState    = gameStates.ATTRACT;
 
-var netStates = Object.freeze({"FREE": 0, "WAITING": 1, "LERPING": 2});
-var currentNetState = netStates.FREE;
+var netStates           = Object.freeze({"FREE": 0, "WAITING": 1, "LERPING": 2});
+var currentNetState     = netStates.FREE;
 
-var cameraNames = Object.freeze({"freeThrow": 0, "quarterFar": 1, "close": 2});
-var selectedCameraType = cameraNames.freeThrow;
+var cameraNames         = Object.freeze({"freeThrow": 0, "quarterFar": 1, "close": 2});
+var selectedCameraType  = cameraNames.freeThrow;
 
-var basketballStates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-var FPSArray = [];
-var pulseAmbientColor = false;
+var basketballStates    = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var FPSArray            = [];
+var pulseAmbientColor   = false;
 
-var add1Point = false;
+var add1Point           = false;
 
-var sceneLoaded = false;
+var sceneLoaded         = false;
 
-var netPhysicsDisabled = false;
+var netPhysicsDisabled  = false;
 
-var hasCourt = false;
+var hasCourt            = false;
 
-
-var readyToSync = false;
+var readyToSync         = false;
 var masterData;
 //Game Variables?
 var totalTime = 0;
@@ -84,12 +83,13 @@ var hasconnected = false;
 var reconnecting = false;
 var isconnected = false;
 
-function createScene() {
-    var scene = new BABYLON.Scene(engine);
-    var shotClockTextures = [10];
+function createScene()
+{
+    var scene                   = new BABYLON.Scene(engine);
+    var shotClockTextures       = [10];
 
     engine.enableOfflineSupport = false;
-    scene.clearColor = BABYLON.Color3.Black();
+    scene.clearColor            = BABYLON.Color3.Black();
 
     scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
     scene.fogStart = 30;
@@ -99,10 +99,13 @@ function createScene() {
     var initCameraPos;
     var initCameraFocus;
 
-    if(useCannon) {
+    if(useCannon)
+    {
       var physicsPlugin = new BABYLON.CannonJSPlugin(false, 1);
       physicsPlugin.allowSleep = false;
-    } else {
+    }
+    else
+    {
       var physicsPlugin = new BABYLON.OimoJSPlugin(5);
       physicsPlugin.allowSleep = true;
     }
@@ -118,6 +121,8 @@ function createScene() {
     camera.setTarget(cameraSettings[currentCameraIndex].initFocus);
     //camera.maxZ = 50;
     //camera.minZ = 1;
+
+    /* BEGIN BACKBOARD SHOTCLOCK */
 
     var shotClockTens =  BABYLON.Mesh.CreatePlane("shotClock", 1.0, scene);
     var shotClockOnes =  BABYLON.Mesh.CreatePlane("shotClock", 1.0, scene);
@@ -149,62 +154,97 @@ function createScene() {
         });
     }
 
+    /* END BACKBOARD SHOTCLOCK */
+
+    //
+
     changeGameState(gameStates.ATTRACT);
 
-    function changeGameState(gameState) {
+    function changeGameState(gameState)
+    {
         switch(gameState)
         {
             case gameStates.ATTRACT:
-                currentGameState = gameState;
-                currentCameraIndex = 0;
-                gameReady = false;
+
+                currentGameState    = gameState;
+                currentCameraIndex  = 0;
+                gameReady           = false;
                 //console.log("Aspect Ratio: " + canvas.width/canvas.height);
-                lobbyStarted = false;
+                lobbyStarted        = false;
                 resetBallColor();
-                if(ISMASTER) {
+
+                if(ISMASTER)
+                {
                   animateCamera();
                 }
-                updateUI();
-                combo = 0;
-                changeBallFX(false);
-                roomReset = false;
-                break;
-            case gameStates.WAITING:
-                currentGameState = gameState;
-                currentCameraIndex = 1;
-                shotIndex = 0;
-                if(ISMASTER){
-                    animateCamera();
-                }
-                updateUI();
-                break;
-            case gameStates.GAMEPLAY:
-                currentGameState = gameState;
-                currentCameraIndex = 1;
-                lobbyStarted = false;
-                updateUI();
-                if (ISTEAMGAME) {
-                  updateBallColor();
-                }
-                break;
-            case gameStates.RESULTS:
-                currentGameState = gameState;
-                currentCameraIndex = 1;
-                gameOver();
 
                 updateUI();
-                initRun = false;
+                combo               = 0;
+                changeBallFX(false);
+                roomReset           = false;
+
                 break;
-            case gameStates.INACTIVE:
-                currentGameState = gameState;
+
+            case gameStates.WAITING:
+
+                currentGameState    = gameState;
+                currentCameraIndex  = 1;
+                shotIndex           = 0;
+
+                if(ISMASTER)
+                {
+                    animateCamera();
+                }
+
                 updateUI();
+
                 break;
+
+            case gameStates.GAMEPLAY:
+
+                currentGameState    = gameState;
+                currentCameraIndex  = 1;
+                lobbyStarted        = false;
+
+                updateUI();
+
+                if(ISTEAMGAME)
+                {
+                  updateBallColor();
+                }
+
+                break;
+
+            case gameStates.RESULTS:
+
+                currentGameState    = gameState;
+                currentCameraIndex  = 1;
+
+                gameOver();
+                updateUI();
+
+                initRun             = false;
+
+                break;
+
+            case gameStates.INACTIVE:
+
+                currentGameState    = gameState;
+
+                updateUI();
+
+                break;
+
             default:
+
                 currentGameState = gameStates.ATTRACT;
         }
     }
 
-    function animateCamera() {
+    ///////////////////////////////////////////////////////////////////////
+
+    function animateCamera()
+    {
         var initPosition;
         var finalPosition;
 
@@ -1052,10 +1092,12 @@ function createScene() {
     var scoreTrigger = new BABYLON.Mesh.CreateBox("scoreTrigger", 3, scene);
     scoreTrigger.position = torus.position;
     scoreTrigger.position.y += .75;
+
     var clearMat = new BABYLON.StandardMaterial("myMaterial", scene);
     clearMat.alpha = 0;
     scoreTrigger.material = clearMat;
     score = 0;
+
     var manager = new BABYLON.ActionManager(scene);
     scoreTrigger.actionManager = manager;
 
@@ -1253,6 +1295,8 @@ function createScene() {
         imp1.addJoint(imp2, joint);
     }
 
+    ///////////////////////////////////////////////////////////////////////
+
     function changeBallFX(toggle)
     {
         if(toggle == true) {
@@ -1276,17 +1320,22 @@ function createScene() {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////
+
     function takeShot()
     {
-        if(currentGameState == gameStates.ATTRACT) {
+        if(currentGameState == gameStates.ATTRACT)
+        {
             basketballs[shotIndex].position = new BABYLON.Vector3(0, -9, -14);
 
             basketballs[shotIndex].physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
             basketballs[shotIndex].physicsImpostor.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             basketballs[shotIndex].physicsImpostor.applyImpulse(new BABYLON.Vector3(attractShots[attractIndex], 20, 11), basketballs[shotIndex].getAbsolutePosition());
         }
-        else if(currentGameState == gameStates.GAMEPLAY){
-            if(ISMASTER){
+        else if(currentGameState == gameStates.GAMEPLAY)
+        {
+            if(ISMASTER)
+            {
                 basketballs[shotIndex].position = new BABYLON.Vector3(0, -9, -14);
                 basketballs[shotIndex].physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
                 basketballs[shotIndex].physicsImpostor.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
@@ -1302,11 +1351,13 @@ function createScene() {
         basketballs[shotIndex].physicsImpostor.setAngularVelocity(convertedRot);
 
         shotIndex++;
-        if(shotIndex>=basketballs.length) shotIndex = 0;
+        if(shotIndex >= basketballs.length) shotIndex = 0;
 
         attractIndex++;
         if(attractIndex >= attractShots.length) attractIndex = 0;
     }
+
+    ///////////////////////////////////////////////////////////////////////
 
     function updateBallColor() //only used if ISTEAMGAME
     {
@@ -1316,6 +1367,8 @@ function createScene() {
             //newBasketballOutlines[i].material.ambientColor = playerData.team.colorRGB;
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////
 
     function resetBallColor() //only used if ISTEAMGAME
     {
@@ -1327,9 +1380,10 @@ function createScene() {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////
+
     function updatePhysics()
     {
-
         if(lowEndDevice)
         {
             scene.getPhysicsEngine().getPhysicsPlugin().world.solver.iterations = 1;
@@ -1338,6 +1392,7 @@ function createScene() {
         {
             scene.getPhysicsEngine().getPhysicsPlugin().world.solver.iterations = 2;
         }
+
         for(var j = 0; j < height; j++)
         {
             for (var i = 0; i < sphereAmount; i++)
@@ -1352,7 +1407,8 @@ function createScene() {
                         //currentMass = .4 - j*.1;
                         currentMass = .15;
 
-                        if(j == 0){
+                        if(j == 0)
+                        {
                             currentRestitution = 15;
                         }
                         else if(j ==1)
@@ -1401,60 +1457,73 @@ function createScene() {
                 }
 
                 //currentRestitution = 0;
-                netSpheres[j*10 + i].physicsImpostor.mass = currentMass;
-                netSpheres[j*10 + i].physicsImpostor.restitution = currentRestitution;
+                netSpheres[j*10 + i].physicsImpostor.mass         = currentMass;
+                netSpheres[j*10 + i].physicsImpostor.restitution  = currentRestitution;
             }
         }
     }
 
-    function changeCamera() {
+    ///////////////////////////////////////////////////////////////////////
+
+    function changeCamera()
+    {
         currentCameraIndex++;
     }
 
     return scene;
 }
 
-var scene = createScene();
-engine.runRenderLoop(function() {
+///////////////////////////////////////////////////////////////////////
 
-    if(!isconnected){
-        return;
-    }
+//wait to start until document ready (*using jQuery*)
 
-    scene.render();
-    var fpsLabel = document.getElementById("fpsLabel");
-    fpsLabel.innerHTML = engine.getFps().toFixed()+ " fps";
-    FPSArray.push(parseInt(engine.getFps().toFixed()));
+$(document).ready( function() {
 
-    if(FPSArray.length == 50)
-    {
+  var scene = createScene();
+  engine.runRenderLoop(function()
+  {
+      if(!isconnected)
+      {
+          return;
+      }
 
-        var average = 0;
-        for(var i = 0; i < 50; i++)
-        {
-            average += FPSArray[i];
-        }
+      //
 
-        average /=50;
-        if(average < 45)
-        {
-            lowEndDevice = true;
-            scene.getPhysicsEngine().setTimeStep(1/(20 * .6));
-        }
-        else
-        {
-            lowEndDevice = false;
-            scene.getPhysicsEngine().setTimeStep(1/(40 * .6));
-        }
-        FPSArray = [];
-        scene.actionManager.processTrigger(scene.actionManager.actions[4].trigger, {additionalData: "updatePhysics"});
-    }
+      scene.render();
+      var fpsLabel = document.getElementById("fpsLabel");
+      fpsLabel.innerHTML = engine.getFps().toFixed()+ " fps";
+      FPSArray.push(parseInt(engine.getFps().toFixed()));
 
-    // if(ISMASTER)
-    // {
-    //     fpsLabel.style.background = "red";
-    //     fpsLabel.style.height = "100%";
-    // }
+      if(FPSArray.length == 50)
+      {
+          var average = 0;
+          for(var i = 0; i < 50; i++)
+          {
+              average += FPSArray[i];
+          }
+
+          average /=50;
+          if(average < 45)
+          {
+              lowEndDevice = true;
+              scene.getPhysicsEngine().setTimeStep(1/(20 * .6));
+          }
+          else
+          {
+              lowEndDevice = false;
+              scene.getPhysicsEngine().setTimeStep(1/(40 * .6));
+          }
+          FPSArray = [];
+          scene.actionManager.processTrigger(scene.actionManager.actions[4].trigger, {additionalData: "updatePhysics"});
+      }
+
+      // if(ISMASTER)
+      // {
+      //     fpsLabel.style.background = "red";
+      //     fpsLabel.style.height = "100%";
+      // }
+  });
+
 });
 
 var $window = $(window);
@@ -1473,29 +1542,38 @@ var lobbyStarted = false;
 
 var myIP;
 
-function getMyIP() {
+///////////////////////////////////////////////////////////////////////
+
+function getMyIP()
+{
   window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;//compatibility for Firefox and chrome
   var pc = new RTCPeerConnection({iceServers:[]}), noop = function(){};
   pc.createDataChannel('');//create a bogus data channel
   pc.createOffer(pc.setLocalDescription.bind(pc), noop);// create offer and set local description
   pc.onicecandidate = function(ice)
   {
-   if (ice && ice.candidate && ice.candidate.candidate)
-   {
-    myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
+    if (ice && ice.candidate && ice.candidate.candidate)
+    {
+      myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
 
-    console.log('my IP: ', myIP);
+      console.log('my IP: ', myIP);
 
-    showCourt(myIP);
+      showCourt(myIP);
 
-    pc.onicecandidate = noop;
-   }
+      pc.onicecandidate = noop;
+    }
   };
 }
+
+///////////////////////////////////////////////////////////////////////
+
 // do we need this function of should getMyIP just call checkMyDeviceInfo?
 function showCourt(someIP) {
   checkMyDeviceInfo(someIP);
 }
+
+///////////////////////////////////////////////////////////////////////
+
 function checkMyDeviceInfo(someIP) {
   console.log('court ready for setup: ip-' + myIP);
 
@@ -1511,6 +1589,7 @@ function checkMyDeviceInfo(someIP) {
   socket.emit('court connected', data);
 }
 
+///////////////////////////////////////////////////////////////////////
 
 function courtReconnection(courtinfofromserver) {
 
@@ -1520,6 +1599,8 @@ function courtReconnection(courtinfofromserver) {
     console.log('we need to set up court')
   }
 }
+
+///////////////////////////////////////////////////////////////////////
 
 function haveCourtJoinRoom(courtname, roomnametojoin) {
   var data = {
@@ -1536,6 +1617,8 @@ function haveCourtJoinRoom(courtname, roomnametojoin) {
   initRun = false;
   updateUI();
 }
+
+///////////////////////////////////////////////////////////////////////
 
 function randomCode(howLong) {
   var randomname = "";
@@ -1733,6 +1816,7 @@ function gameOver() {
       }
   }
 }
+
 
 socket.on('set master', function(){
     ISMASTER = true;
