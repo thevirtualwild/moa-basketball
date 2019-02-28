@@ -1,3 +1,4 @@
+
 var textFadeTime = .5;
 
 var canvas = document.getElementById("canvas");
@@ -6,8 +7,10 @@ var footer = document.querySelector("footer");
 var footerLeft = document.getElementById("footerLeft");
 var footerCenter = document.getElementById("footerCenter");
 var playNow= document.getElementById("playNow");
-var comboBadge= document.getElementById("comboBadge");
-var comboNumText = document.getElementById("comboNum");
+var comboBadge = document.getElementById("score-bonus");
+var comboNumText = comboBadge.getElementsByClassName("bonus-num")[0];
+console.log(comboNumText);
+console.dir(comboBadge.getElementsByClassName("bonus-num"));
 var streak = document.getElementById("streak");
 var sparkle = comboBadge.getElementsByClassName("sparkle")[0];
 
@@ -16,7 +19,7 @@ var infobarContent = document.getElementById("infobar-content");
 var gameplayLeft = document.getElementById("footerLeft").getElementsByClassName("gameplayLeft")[0];
 var gameplayRight = document.getElementById("footerCenter").getElementsByClassName("gameplayRight")[0];
 var scoreText = document.getElementById("current-score");
-var scoreLabel = gameplayLeft.getElementsByClassName("textScoreLabel")[0];
+// var scoreLabel = gameplayLeft.getElementsByClassName("textScoreLabel")[0];
 var firstName = infobarContent.getElementsByClassName("firstname")[0];
 var lastName = infobarContent.getElementsByClassName("lastname")[0];
 var footerWidth;
@@ -25,29 +28,29 @@ function UIGameplayAnimateIn()
 {
     turnOnGameplay();
 
-    footerWidth = initWaitingLeftWidth;
-    footerCenter.style.width = initWaitingLeftWidth + "px";
-    //console.log(footerWidth);
-    initLeftPos = firstName.style.left;
-    //console.log(initLeftPos);
-    waitingLeft.style.display = "none";
-    waitingRight.style.display = "none";
-
-    gameplayLeft.style.display = "inline";
-    gameplayRight.style.display = "inline"
-
-    gameplayLeft.style.opacity = 0;
+    // footerWidth = initWaitingLeftWidth;
+    // footerCenter.style.width = initWaitingLeftWidth + "px";
+    // //console.log(footerWidth);
+    // initLeftPos = firstName.style.left;
+    // //console.log(initLeftPos);
+    // waitingLeft.style.display = "none";
+    // waitingRight.style.display = "none";
+    //
+    // gameplayLeft.style.display = "inline";
+    // gameplayRight.style.display = "inline"
+    //
+    // gameplayLeft.style.opacity = 0;
     firstName.style.opacity = 0;
     lastName.style.opacity = 0;
     firstName.style.left = "0px";
     lastName.style.left = "0px";
 
     scoreText.style.opacity= 0;
-    scoreLabel.style.lineHeight = 0;
+    // scoreLabel.style.lineHeight = 0;
 
     //console.log(initWaitingLeftWidth);
     //TweenMax.to(scoreLabel, textFadeTime, {lineHeight:40});
-    TweenMax.to(gameplayLeft, textFadeTime, {opacity:1, delay: textFadeTime});
+    // TweenMax.to(gameplayLeft, textFadeTime, {opacity:1, delay: textFadeTime});
     TweenMax.to(scoreText, textFadeTime, {opacity:1, delay: textFadeTime});
 
 
@@ -84,26 +87,28 @@ function UIGameplayUpdateName(name)
 
 function UIGameplayAnimateBadgeOn(comboNum)
 {
-    comboNumText.innerHTML = comboNum.toString();
-
-
-    if(comboNum <= 2)
-    {
-        TweenMax.to(comboNumText, 0.1, {opacity: 1});
-        TweenMax.to(comboBadge, 0.1, {opacity: 1});
-    }
-
-    TweenMax.to(comboNumText, 0.1, {scaleX:1.2, scaleY:1.2, repeat: 1, yoyo:true});
-
-    TweenMax.to(sparkle, 0.01, {rotation:0});
-    TweenMax.to(sparkle, 0.3, {scaleX:1, scaleY:1, ease:Back.easeOut});
-    TweenMax.to(sparkle, .7, {delay: 0.1, rotation:180, ease:Power2.easeNone});
-    TweenMax.to(sparkle, 0.3, {delay: 0.5, scaleX:0, scaleY:0});
+  //TODO: not ready to start animating combos
+    // comboNumText.innerHTML = comboNum.toString();
+    //
+    //
+    // if(comboNum <= 2)
+    // {
+    //     TweenMax.to(comboNumText, 0.1, {opacity: 1});
+    //     TweenMax.to(comboBadge, 0.1, {opacity: 1});
+    // }
+    //
+    // TweenMax.to(comboNumText, 0.1, {scaleX:1.2, scaleY:1.2, repeat: 1, yoyo:true});
+    //
+    // TweenMax.to(sparkle, 0.01, {rotation:0});
+    // TweenMax.to(sparkle, 0.3, {scaleX:1, scaleY:1, ease:Back.easeOut});
+    // TweenMax.to(sparkle, .7, {delay: 0.1, rotation:180, ease:Power2.easeNone});
+    // TweenMax.to(sparkle, 0.3, {delay: 0.5, scaleX:0, scaleY:0});
 }
 
 function UIGameplayAnimateBadgeOff()
 {
-    TweenMax.to(comboBadge, 0.1, {opacity: 0});
+  //TODO: not ready to start animating combos
+    // TweenMax.to(comboBadge, 0.1, {opacity: 0});
 }
 
 function turnOnGameplay()

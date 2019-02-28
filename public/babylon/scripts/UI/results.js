@@ -5,8 +5,8 @@ var canvas = document.getElementById("canvas");
 var footer = document.querySelector("footer");
 var footerLeft = document.getElementById("footerLeft");
 var footerCenter = document.getElementById("footerCenter");
-var playNow= document.getElementById("playNow");
-var comboBadge= document.getElementById("comboBadge");
+var playNow = document.getElementById("playNow");
+var comboBadge = document.getElementById("comboBadge");
 var inner = document.getElementById("inner");
 var results = document.getElementById("results");
 var topScore = document.getElementById("topScore");
@@ -61,14 +61,14 @@ var winner = false;
 var widthTweenDistance;
 var heightTweenDistance;
 
-yourFirstName.innerHTML = "";
-yourLastName.innerHTML = "";
+// // yourFirstName.innerHTML = "";
+// // yourLastName.innerHTML = "";
+//
+// topFirstName.innerHTML = "";
+// topLastName.innerHTML = "";
 
-topFirstName.innerHTML = "";
-topLastName.innerHTML = "";
-
-topScoreText.innerHTML = "21";
-yourScoreText.innerHTML = "12";
+// topScoreText.innerHTML = "0";
+// yourScoreText.innerHTML = "0";
 
 var animating = false;
 var currentScore;
@@ -156,16 +156,17 @@ function UIResultsUpdateName(name)
 
 function UIResultsUpdateScore(playerScore)
 {
-    console.log('UIResultsUpdateScore:');
-    console.dir(playerScore);
-    if(playerScore === undefined){
-        currentScore = 0;
-        player_score_num.innerHTML = currentScore.toString();
-    }
-    else {
-        currentScore = playerScore;
-        player_score_num.innerHTML = playerScore.toString();
-    }
+  //TODO: Should only be called in court during results phase
+    // console.log('UIResultsUpdateScore:');
+    // console.dir(playerScore);
+    // if(playerScore === undefined){
+    //     currentScore = 0;
+    //     player_score_num.innerHTML = currentScore.toString();
+    // }
+    // else {
+    //     currentScore = playerScore;
+    //     player_score_num.innerHTML = playerScore.toString();
+    // }
 
 }
 
