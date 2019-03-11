@@ -1059,13 +1059,11 @@ function createScene()
 
                     if(j == 0)
                     {
-                        currentRestitution = 10;
-                        //currentRestitution = 8;
+                        currentRestitution = 8;
                     }
                     else if(j == 1)
                     {
-                        currentRestitution = 9;
-                        // currentRestitution = 8;
+                        currentRestitution = 8;
                     }
                     else if(j == 2)
                     {
