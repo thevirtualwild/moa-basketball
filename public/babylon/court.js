@@ -395,7 +395,8 @@ function createScene()
           currentGameTime -= (engine.getDeltaTime() / 1000);
           if(combopts > 1)
           {
-            combopts -= (scoremodifier * (engine.getDeltaTime() / 2000) ); //change for combo dropoff
+            combopts -= (scoremodifier-1 * (engine.getDeltaTime() / 8000) ); //change for combo dropoff
+            updateScoreModifier();
           }
 
           var time                = currentGameTime.toFixed(2); // do we need this?
@@ -417,6 +418,7 @@ function createScene()
           {
               resetClock();
               updateClock();
+              UIResultsAnimateOut();
 
               if(ISMASTER)
               {
@@ -498,8 +500,8 @@ function createScene()
         //JAY happens 1 time;
 
         var baseMaterial                = new BABYLON.StandardMaterial("baseMaterial", scene);
-        baseMaterial.emissiveTexture    = new BABYLON.Texture("./assets/BBall_V2/BBall_V2_Albedo.png", scene);
-        baseMaterial.diffuseTexture     = new BABYLON.Texture("./assets/BBall_V2/BBall_V2_Albedo.png", scene);
+        baseMaterial.emissiveTexture    = new BABYLON.Texture("./assets/BBall_V2/BBall_noLogo-v2.png", scene);
+        baseMaterial.diffuseTexture     = new BABYLON.Texture("./assets/BBall_V2/BBall_noLogo-v2.png", scene);
         baseMaterial.diffuseTexture.hasAlpha = true;
 
         var overlayMaterial             = new BABYLON.StandardMaterial("overlayMaterial", scene);
@@ -645,7 +647,7 @@ function createScene()
                         //UIGameplayAnimateBadgeOff();
                         //changeBallFX(false);
                         basketballStates[i] = 0;
-                        ComboIsBroken       = true;
+                        // ComboIsBroken       = true;
                         StreakIsBroken      = true;
                     }
                 }
@@ -1183,6 +1185,7 @@ function createScene()
     clearMat.alpha = 0;
     scoreTrigger.material = clearMat;
     score = 0;
+    highestStreak = 0;
 
     var manager = new BABYLON.ActionManager(scene);
     scoreTrigger.actionManager = manager;
@@ -1356,7 +1359,7 @@ function createScene()
             secondDigit = parseInt((currentGameTime+ 1).toFixed(2).substr(0, 1));
         }
 
-        console.log("UPDATECLOCK: current combopts - " + combopts + ' - ' + scoremodifier);
+        // console.log("UPDATECLOCK: current combopts - " + combopts + ' - ' + scoremodifier);
 
         if(currentGameTime == 30)
         {
@@ -1592,7 +1595,10 @@ var scene = createScene();
 
 engine.runRenderLoop(function()
 {
-    if(!isconnected) return;
+    if(!isconnected) {
+      console.log('tried to run engine but !isconnected');
+      return;
+    }
 
     //
 
@@ -1766,43 +1772,44 @@ function randomRange (min, max)
 
 ///////////////////////////////////////////////////////////////////////
 
+function checkCurrentLevel(newModifier, pointsNeeded) {
+  if (scoremodifier == newModifier) {
+    console.log('Too long to score.');
+
+  } else {
+    combopts = pointsNeeded + 1;
+    scoremodifier = newModifier;
+    UIGameplayAnimateBadgeOn(scoremodifier);
+    UIComboLevelChange(scoremodifier);
+  }
+}
+
 function updateScoreModifier()
 {
+  // console.log('updateScoreMod - ' + combopts);
     if (combopts >= 92) {
-      if (scoremodifier == 10) {
-        console.log('Too long to score');
-      } else {
-        combopts = 93;
-        scoremodifier = 10;
-      }
+      checkCurrentLevel(10, 92);
     } else if (combopts >= 74) {
-      scoremodifier = 9;
+      checkCurrentLevel(9, 74);
     } else if (combopts >= 58) {
-      scoremodifier = 8;
+      checkCurrentLevel(8, 58);
     } else if (combopts >= 44) {
-      scoremodifier = 7;
+      checkCurrentLevel(7, 44);
     } else if (combopts >= 32) {
-      scoremodifier = 6;
+      checkCurrentLevel(6, 32);
     } else if (combopts >= 22) {
-      scoremodifier = 5;
+      checkCurrentLevel(5, 22);
     } else if (combopts >= 14) {
-      scoremodifier = 4;
+      checkCurrentLevel(4, 14);
     } else if (combopts >= 8) {
-      if (scoremodifier == 3) {
-        console.log('Too long to score');
-      } else {
-        combopts = 9;
-        scoremodifier = 3;
-      }
+      checkCurrentLevel(3, 8);
     } else if (combopts >= 4) {
-      if (scoremodifier == 2) {
-        console.log('Too long to score');
-      } else {
-        combopts = 5;
-        scoremodifier = 2;
-      }
+      checkCurrentLevel(2, 4);
     } else {
       scoremodifier = 1;
+      comboIsBroken = true;
+
+      UIGameplayAnimateBadgeOff();
     }
 }
 
@@ -1818,8 +1825,7 @@ function madeAShot()
 
     combopts = combopts + 1 + (scoreToAdd);
     console.log("MADEASHOT: combopts - " + combopts);
-    updateScoreModifier();
-    UIGameplayAnimateBadgeOn(scoremodifier); //was combo
+    updateScoreModifier(); //was combo
     // changeBallFX(true);
 }
 
@@ -1861,22 +1867,23 @@ function updateUI()
     {
         case gameStates.ATTRACT:
             score = 0;
+            highestStreak = 0;
             currentWaitTime = initWaitTime;
             hasplayer = false;
             scoreLabel.innerHTML = "";
             //attractLabel.innerHTML = "COURT CODE: <br /> " + courtName;
             UIAttractUpdateCourtName(courtName);
-            attractLabel.innerHTML = "";
+            // attractLabel.innerHTML = "";
             resetClock();
             UIGameplayUpdateScore(0);
             if(!initRun){
-                console.log("uianimatein inside of updateui");
-                UIAttractAnimateIn();
+              console.log("uianimatein inside of updateui");
+              UIAttractAnimateIn();
             }
             break;
         case gameStates.WAITING:
-            scoreLabel.innerHTML = "COURT CODE: " + courtName;
-            attractLabel.innerHTML = "";
+            // scoreLabel.innerHTML = "COURT CODE: " + courtName;
+            // attractLabel.innerHTML = "";
             UIAttractAnimateOut();
             break;
         case gameStates.GAMEPLAY:
@@ -1934,7 +1941,7 @@ function createCameraTypes()
 
 function resetClock()
 {
-  currentGameTime = initGameTime;
+  currentGameTime = initGameTime-1;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1965,16 +1972,18 @@ function gameOver()
     gamename: gameName
   }
 
-  console.log('GAMEOVER: gamedata - ' + gamedata);
-  console.log('GAMEOVER: courtdata - ' + courtdata);
+  console.log('GAMEOVER: gamedata - ');
+  console.dir(gamedata);
+  console.log('GAMEOVER: courtdata - ');
+  console.log(courtdata);
 
   if(playerData)
   {
-      if(ISMASTER)
-      {
-          //MAYBE CHECK IF HAS PLAYER
-          socket.emit('game over', gamedata);
-      }
+    if(ISMASTER)
+    {
+      //MAYBE CHECK IF HAS PLAYER
+      socket.emit('game over', gamedata, courtdata);
+    }
   }
 }
 
@@ -2063,7 +2072,9 @@ function fakeSyncData(_syncData)
 
 socket.on('game almost ready', function(gamedata)
 {
-   gameName = gamedata.gamename;
+   gameName = gamedata.game.name;
+
+   socket.emit('update game', gamedata.game);
    console.log('GAMEALMOSTREADY: ' + gameName);
 });
 
@@ -2189,12 +2200,18 @@ socket.on('end all games', function(courtthatfinished)
 
 socket.on('show results', function(resultsdata)
 {
-  console.log('Results!');
+  console.log('-Court.js- Show Results!');
   console.dir(resultsdata);
 
   if(hasplayer)
   {
-      UIResultsSetData(resultsdata);
+    var playerScoreData = {
+      score: score,
+      combo: combo,
+      highestStreak: highestStreak,
+      shotsMade: shotsMade
+    }
+    UIResultsSetData(resultsdata, playerScoreData);
   }
 });
 
@@ -2204,6 +2221,7 @@ socket.on('reset game', function()
 {
   scene.actionManager.processTrigger(scene.actionManager.actions[1].trigger, {additionalData: "changeGameStateAttract"});
   console.log('court should be reset here');
+  currentResultsTime = initResultsTime;
   socket.emit('court reset', courtName);
 });
 
@@ -2220,7 +2238,7 @@ socket.on('change player name', function(data)
 
 socket.on('update game name', function(newgamename)
 {
-  socket.emit('update game name', newgamename);
+  gameName = newgamename;
 });
 
 ///////////////////////////////////////////////////////////////////////

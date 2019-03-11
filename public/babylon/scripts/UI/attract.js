@@ -1,132 +1,109 @@
-var textFadeTime = 0.25;
+var textFadeTime = 0.5;
 
 var canvas = document.getElementById("canvas");
 
-var footerLeft = document.getElementById("footerLeft");
-var footerCenter = document.getElementById("footerCenter");
-var playNow= document.getElementById("playNow");
-var comboBadge= document.getElementById("comboBadge");
-var results = document.getElementById("results");
-var inner = document.getElementById("inner");
+var gameCodeText = $("#gamecode-text");
+var textingCode = $("#texting-code");
+var textingNumber = $("#texting-number");
+var attractTextContainer = $('.attract-state .text-container');
+var info_layer = $('.info-layer');
 
-var attractLeftStep1 = document.getElementById("footerLeft").getElementsByClassName("attractLeft")[0];
-var attractRightStep1 = document.getElementById("footerLeft").getElementsByClassName("attractRight")[0];
+// var attractItems = document.getElementsByClassName("attract-state");
 
-var attractLeftStep2 = document.getElementById("footerCenter").getElementsByClassName("attractLeft")[0];
-var attractRightStep2 = document.getElementById("footerCenter").getElementsByClassName("attractRight")[0];
+var attractTweens = [];
 
-var gameCodeText = document.getElementById("gamecode-text");
-var textingCode = document.getElementById("texting-code");
-var textingNumber = document.getElementById("texting-number");
-
-var waitingLeft = document.getElementById("footerLeft").getElementsByClassName("waitingLeft")[0];
-var waitingRight = document.getElementById("footerCenter").getElementsByClassName("waitingRight")[0];
-var textWaiting = waitingRight.getElementsByClassName("textWaiting")[0];
-
-var attractItems = document.getElementsByClassName("attract-state");
-
-var initFooterLeftWidth;
-var initFooterCenterWidth;
-var initWaitingLeftWidth;
-var attractLeftStepNum = document.getElementById("footerLeft").getElementsByClassName("stepNum");
 var initAttractLoad = true;
 var attractIsAnimating = false;
 function UIAttractAnimateIn()
 {
+    // attractAnimations();
+
     if(!attractIsAnimating)
     {
-        turnOnAttract();
-        attractIsAnimating = true;
-        console.log("UIATTRACTANIMATEIN");
-        inner.style.backgroundColor = "transparent";
-        results.style.display = "none";
-        TweenMax.from(footer, textFadeTime, {backgroundPositionY:200});
-        TweenMax.from(footerLeft, textFadeTime, {top:200});
-        TweenMax.from(footerCenter, textFadeTime, {top:200});
-        TweenMax.from(playNow, textFadeTime * 3, {opacity: 1, repeat: -1,  ease:Power2.easeIn, yoyo:true});
-        TweenMax.from(attractLeftStep1, textFadeTime, {delay: 2*textFadeTime, opacity:0});
-        TweenMax.from(attractRightStep1, textFadeTime, {delay: 2*textFadeTime, opacity:0});
-        TweenMax.from(attractLeftStep2, textFadeTime, {delay: 2*textFadeTime, opacity:0});
-        TweenMax.from(attractRightStep2, textFadeTime, {delay: 2*textFadeTime, opacity:0, onComplete:animatingOff});
+      // resetAnimations();
+      turnOffResults();
+      turnOnAttract();
+      attractIsAnimating = true;
+      console.log("UIATTRACTANIMATEIN");
+      //onComplete:animatingOff;
+      animatingOff();
     }
 
+    animateLeftFromX(attractTextContainer, '-500px', textFadeTime, textFadeTime, attractAnimations);
+    animateLeftFromX(gameCodeText, '-500px', textFadeTime, textFadeTime);
+    TweenMax.to(info_layer, textFadeTime, {opacity:1, delay: textFadeTime, ease:Sine.easeInOut});
 }
 
 function UIAttractAnimateOut()
 {
-    TweenMax.to(attractLeftStep1, textFadeTime, {opacity:0});
-    TweenMax.to(attractRightStep1, textFadeTime, {opacity:0});
-    TweenMax.to(attractLeftStep2, textFadeTime, {opacity:0});
-    TweenMax.to(attractRightStep2, textFadeTime, {opacity:0});
-
-    TweenMax.to(playNow, textFadeTime, {opacity:0});
-    TweenMax.to(comboBadge, textFadeTime, {opacity:0});
-
-    TweenMax.to(footerLeft, textFadeTime, {delay: textFadeTime*2, width:202, onComplete: turnOffAttract});
+    //onComplete: turnOffAttract
+    animateLeftToX(gameCodeText, '-500px', textFadeTime/2, textFadeTime/2);
+    animateLeftToX(attractTextContainer, '-500px', textFadeTime/2, textFadeTime/2, turnOffAttract);
+    TweenMax.to(info_layer, textFadeTime/2, {opacity:0, delay: textFadeTime/2, ease:Sine.easeInOut});
 }
 
 function turnOnAttract()
 {
     changeVisibility('attract-state', 'visible');
     changeDisplay('attract-state', 'block');
-
-    attractLeftStep1.style.display = "inline";
-    attractRightStep1.style.display = "inline";
-    attractLeftStep2.style.display = "inline";
-    attractRightStep2.style.display = "inline";
-
-    attractLeftStep1.style.opacity = 1;
-    attractLeftStep2.style.opacity = 1;
-    attractRightStep1.style.opacity = 1;
-    attractRightStep2.style.opacity = 1;
-
-    footer.style.backgroundPositionY = 0;
-    footerLeft.style.top = 0;
-    footerCenter.style.top = 0;
-
-    playNow.style.opacity = 0;
-    comboBadge.style.opacity = 0;
-
-    if(initAttractLoad)
-    {
-        initWaitingLeftWidth = waitingLeft.offsetWidth;
-        initAttractLoad = false;
-    }
-    else
-    {
-        footerLeft.style.width = "auto";
-        footerCenter.style.width = "auto";
-    }
-    waitingLeft.style.display = "none";
-    waitingRight.style.display = "none";
+    turnOnAnimations();
+    restartAnimations(attractTweens);
+    // attractAnimations();
 }
 
 function turnOffAttract()
 {
     changeVisibility('attract-state', 'hidden');
     changeDisplay('attract-state', 'none');
-
-    attractLeftStep1.style.display = "none";
-    attractRightStep1.style.display = "none";
-    attractLeftStep2.style.display = "none";
-    attractRightStep2.style.display = "none";
+    turnOffAnimations();
+    // pauseAnimations(attractTweens);
 
     UIWaitingAnimateIn();
 }
 
 function UIAttractUpdateCourtName(name)
 {
-    gameCodeText.innerHTML = name;
+    gameCodeText.html(name);
 
     UIAttractUpdateTextingInfo(texting_code, texting_number);
 }
 function UIAttractUpdateTextingInfo(text_code, text_num)
 {
-    textingCode.innerHTML = text_code;
-    textingNumber.innerHTML = text_num;
+    textingCode.html(text_code);
+    textingNumber.html(text_num);
 }
 
 function animatingOff()
 {
     attractIsAnimating = false;
+}
+
+
+createLights();
+
+var playnowTween = PulseScaling($('#gameplay-flavortext'), 1, 1.2);
+attractTweens.push(playnowTween);
+
+function attractAnimations() {
+  turnOnAnimations();
+  restartAnimations(attractTweens);
+}
+function createLights() {
+  var light1 = createLight($('#right-lights .small-light'), '1000px', .5, 'down', 1);
+  var light2 = createLight($('#right-lights .large-light'), '-700px', .5, 'up',2);
+  var light3 = createLight($('#left-lights .large-light'), '0', .5, 'down',1.5);
+  var light4 = createLight($('#left-lights .small-light'), '320px' , .5, 'up', .75);
+
+  attractTweens.push(light1);
+  attractTweens.push(light2);
+  attractTweens.push(light3);
+  attractTweens.push(light4);
+
+  // resetAnimations();
+}
+
+
+function resetAnimations() {
+  restartAnimations(lightTweens);
+  // resetAnimation($('#gameplay-flavortext'));
 }

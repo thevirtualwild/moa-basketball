@@ -1,17 +1,18 @@
 @font-face {
   font-family: 'Interstate';
   font-weight: 500;
-  src: url("../../fonts/interstate-regular.ttf"); // was "assets/Fonts/interstate-regular.ttf");
+  src: url("assets/Fonts/interstate-regular.TTF"); // was "assets/Fonts/interstate-regular.ttf");
 }
 @font-face {
   font-family: 'Interstate';
   font-weight: 700;
-  src: url("../../fonts/interstate-boldcompressed.otf"); // was "assets/Fonts/interstate-boldcompressed.otf"
+  src: url("assets/Fonts/interstate-boldcompressed.OTF"); // was "assets/Fonts/interstate-boldcompressed.otf"
 }
 @font-face {
   font-family: 'Fresh Marker';
-  src: url('assets/fonts/freshmarker-webfont.woff2') format('woff2'),
-       url('assets/fonts/freshmarker-webfont.woff') format('woff'); // was "assets/Fonts/freshmarker.ttf"
+  src: url('assets/Fonts/freshmarker-webfont.ttf') format('ttf'),
+       url('assets/Fonts/freshmarker-webfont.woff2') format('woff2'),
+       url('assets/Fonts/freshmarker-webfont.woff') format('woff'); // was "assets/Fonts/freshmarker.ttf"
 }
 
 @import url('https://fonts.googleapis.com/css?family=Overpass:400,700');
@@ -19,21 +20,18 @@
 
 * {
   box-sizing: border-box;
-  font-family: "Overpass";
+  font-family: "Interstate";
 }
-
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden !important;
 }
-
 html {
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
 }
-
 html, input {
   font-family:
           "HelveticaNeue-Light",
@@ -44,7 +42,6 @@ html, input {
           "Lucida Grande",
           sans-serif;
 }
-
 ul {
   list-style: none;
   word-wrap: break-word;
@@ -62,18 +59,14 @@ canvas{
   z-index: -5;
 }
 
-
-
 .colors {
   position: fixed;
 }
-
 .color {
   display: inline-block;
   height: 48px;
   width: 48px;
 }
-
 .color.black { background-color: black; }
 .color.red { background-color: red; }
 .color.green { background-color: green; }
@@ -81,7 +74,7 @@ canvas{
 .color.yellow { background-color: yellow; }
 
 
-
+// old scss to be cleaned up
 #template{
   margin:0;
   position:absolute;
@@ -96,7 +89,6 @@ canvas{
     opacity: 0.5;
   }
 }
-
 #fpsLabel, #list-top {
   position: fixed;
   right: 20px;
@@ -104,7 +96,6 @@ canvas{
   color: #999;
   cursor: default;
 }
-
 #attractLabel {
   position: absolute;
   left:0;
@@ -124,7 +115,6 @@ canvas{
   color: #999;
   cursor: default;
 }
-
 #list-top, #list-bot {
   left: 20px;
   right: initial;
@@ -136,7 +126,6 @@ canvas{
   color: #999;
   cursor: default;
 }
-
 #scoreLabel {
   position: absolute;
   left: 20px;
@@ -144,7 +133,6 @@ canvas{
   color: #999;
   cursor: default;
 }
-
 #titleTopLeft{
   position: absolute;
   left:0px;
@@ -156,9 +144,8 @@ canvas{
   border-radius:3px;
   cursor: default;
   overflow: visible;
-  z-index: 999;
+  z-index: 500;
 }
-
 #titleTopLeft img{
   width: 100%;
   height: 100%;
@@ -166,7 +153,6 @@ canvas{
   object-position: left;
   position: relative;
 }
-
 #titleTopLeft img#titleLights{
   width: 200%;
   height: 200%;
@@ -176,8 +162,6 @@ canvas{
   top:-20px;
   left:-100px;
 }
-
-
 #permanentGameBranding{
   header{
     height: 200px;
@@ -198,7 +182,6 @@ canvas{
     background-repeat: repeat-x;
   }
 }
-
 #inner{
   max-width: 1920px;
   width: 100%;
@@ -417,7 +400,6 @@ canvas{
     }
   }
 }
-
 #preFooter{
   position: absolute;
   bottom: 250px;
@@ -445,7 +427,6 @@ canvas{
     }
   }
 }
-
 footer{
 
 
@@ -719,12 +700,7 @@ footer{
 
   }
 }
-
-
-
-
 /* Pages */
-
 .pages {
   height: 100%;
   margin: 0;
@@ -732,19 +708,15 @@ footer{
   width: 100%;
   position: absolute;
 }
-
 .page {
   height: 100%;
   position: absolute;
   width: 100%;
 }
-
 /* Login & Roomcange Pages*/
-
 .login.page, .passcode.page {
   background-color: #000;
 }
-
 .login.page .form, .passcode.page .form {
   height: 100px;
   margin-top: -100px;
@@ -755,7 +727,6 @@ footer{
   width: 100%;
   max-width: 100%;
 }
-
 .login.page .form .usernameInput, .passcode.page .form .passcodeInput {
   background-color: transparent;
   border: none;
@@ -766,25 +737,27 @@ footer{
   width: 400px;
   max-width: 100%;
 }
-
 .login.page .title, .passcode.page .title {
   font-size: 200%;
 }
-
 .login.page .usernameInput, .passcode.page .passcodeInput {
   font-size: 200%;
   letter-spacing: 3px;
 }
-
 .login.page .title, .passcode.page .title, .login.page .usernameInput, .passcode.page .passcodeInput {
   color: #fff;
   font-weight: 100;
 }
 
 
+//reset
+#scoreLabel, #attractLabel, #fpsLabel, #fpsLabel-bot, #permanentGameBranding {
+  display:none;
+}
 
 
 
+// new scss
 
 $yellow1: #f8d133;
 $green1: #a5ce37;
@@ -797,17 +770,14 @@ $green2: rgb(56, 171, 37);
 $blue2: rgb(0, 107, 138);
 $pink2: rgb(158, 2, 91);
 $orange2: rgb(241, 99, 34);
+@mixin fillbackground {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
 
-
-#template {
-  display: none !important;
-}
-#scoreLabel, #attractLabel, #fpsLabel, #fpsLabel-bot {
-  display:none;
-}
-#permanentGameBranding {
-  display:none;
-}
 #screen-overlay {
   background:white;
   padding:60px;
@@ -816,7 +786,7 @@ $orange2: rgb(241, 99, 34);
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 999 !important;
 
   img {
     width:100%;
@@ -835,13 +805,31 @@ $orange2: rgb(241, 99, 34);
 .attract-state, .waiting-state, .gameplay-state, .results-state {
   visibility: hidden;
   display:none;
+
+  .text-container {
+    padding-bottom:20px;
+
+    opacity:0;
+  }
 }
+
+.gameplay-state .text-container {
+  padding-bottom: 160px;
+}
+.results-state .text-container {
+  padding-bottom:30px;
+
+  #winner-trophy {
+    margin-bottom:-100px;
+  }
+}
+
 
 
 #infobar {
   width: 29%;
-  padding: 0 50px;
-  z-index: 100;
+  // padding: 0 50px;
+  z-index: 200;
   display: inline-block;
   position: relative;
   height: 100%;
@@ -861,6 +849,7 @@ $orange2: rgb(241, 99, 34);
 
   #infobar-header {
     text-align: center;
+    margin:0 50px;
   }
 
   .general-text {
@@ -884,45 +873,43 @@ $orange2: rgb(241, 99, 34);
   }
 
   #info-container {
+    // margin-top:80px;
     #texting-instructions, #gamecode-instructions {
       text-align: center;
     }
 
     #infobar-content {
+      position: absolute;
+      width: 100%;
+      // padding: 0 50px;
+      bottom: 250px;
 
       hr {
         height: 6px;
         background: #333;
-        margin-bottom: 25px;
-        margin-top:10px;
+        margin: 10px 50px 25px;
       }
 
       .waiting-state {
         margin-top:100px;
 
         .general-text {
-          font-size: 64px;
+          font-size: 80px;
           text-align: center;
         }
       }
 
       .results-state {
-        .playername-container {
-          margin-top: 70px;
-        }
-        .winner-label {
+
+        #winner-label {
           text-align: center;
-          color: #333;
-          font-size: 38px;
           text-transform: uppercase;
-          margin-bottom: 30px;
+          margin-bottom: 40px;
         }
       }
-      .playername-container {
-        margin-top:100px;
-      }
+
       .firstname,.lastname {
-        font-size: 80px;
+        font-size: 120px;
         font-family: 'Fresh Marker';
         transform: rotate(-10deg);
         line-height:1.1;
@@ -937,22 +924,40 @@ $orange2: rgb(241, 99, 34);
       #ribbon-container {
         position: absolute;
         width: 115%;
-        z-index: 999;
+        z-index: 500;
         bottom: 40px;
-        margin-left: -50px;
-        margin-right: -50px;
 
         .dropshadow-container {
           filter: drop-shadow(-25px 10px 5px rgba(0,0,0,0.5));
         }
 
-        .ribbon-label {
-          font-size: 30px;
-          padding: 0 10px 5px;
+        #score-label {
+          padding: 0 20px 20px;
+          text-align:left;
         }
 
         #ribbon-background {
           background: linear-gradient(-90deg, $green1, $green2);
+
+          &:before,
+          &:after {
+            content: '';
+            @include fillbackground;
+            animation: opacity 6s infinite;
+            -webkit-animation: opacity 6s infinite;
+            -moz-animation: opacity 6s infinite;
+            opacity: 0;
+            }
+          &:before {
+            background: linear-gradient(-90deg,
+              $orange2, $orange1);
+            animation-delay: 2s;
+          }
+          &:after {
+            background: linear-gradient(-90deg,
+              $pink1, $pink2);
+            animation-delay: 4s;
+          }
         	/* background-size: 400% 400%; */
         	/* -webkit-animation: Gradient 8s ease infinite;
         	-moz-animation: Gradient 8s ease infinite;
@@ -967,16 +972,33 @@ $orange2: rgb(241, 99, 34);
           align-items: center;
           justify-content: center;
 
+          .attract-state, .waiting-state, .gameplay-state, .results-state {
+            z-index:500;
+          }
+
+          #waiting-timer {
+            opacity: 0;
+
+            .fa-stopwatch {
+              position: absolute;
+              left: 120px;
+              font-size: .5em;
+              top: 40px;
+            }
+          }
           .ribbon-text {
             text-align: center;
-            font-size: 143px;
+            font-size: 183px;
             color: white;
 
-            line-height: 1.4;
+            line-height: 0 !important;
+            padding-top:22px;
+
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 500;
           }
 
           .results-state {
@@ -986,20 +1008,22 @@ $orange2: rgb(241, 99, 34);
               display: flex;
               flex-direction: column;
               width: 100%;
+              opacity: 0;
 
               .stat-text {
                 display: flex;
                 justify-content: space-between;
-                font-size: 60px !important;
+                font-size: 50px;
                 padding: 0 30px;
                 font-weight: normal;
-                line-height: 1.3 !important;
+                line-height: 1.4 !important;
                 color: white;
+                text-transform: uppercase;
               }
 
               .stat-number {
                 font-weight: bold;
-                font-size: 75px;
+                font-size: 150%;
                 line-height: 1;
                 margin-top: -10px;
               }
@@ -1010,6 +1034,187 @@ $orange2: rgb(241, 99, 34);
     }
   }
 }
+
+
+
+//lights
+// #left-lights .small-light, #right-lights .large-light, .light-direction-down {
+//     // transform: translate(-512px, 1600px);
+//     transform: translateY(-1000px);
+// }
+// #left-lights .large-light, #right-lights .small-light, .light-direction-up {
+//     // transform: translate(512px, -1600px);
+// }
+#animation-container {
+  // display:block;
+
+  .overlay-background {
+    content: '';
+    display: none;
+    background: rgba(0,0,0,.8);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index:-1;
+
+    opacity: 0;
+  }
+
+  #lighting-container {
+    display:flex;
+    flex-direction: row;
+    width: 100%;
+    height:100%;
+    transform-origin: top left;
+    position:absolute;
+    overflow: hidden;
+
+    #left-lights, #right-lights {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+
+    #left-lights {
+      transform-origin: top left;
+      transform: rotate(18deg) translateY(-40%) scaleY(1.35);
+
+      .small-light {
+        left:320px;
+      }
+    }
+    #right-lights {
+      transform-origin: bottom right;
+      transform: rotate(18deg) translateY(40%) scaleY(1.35);
+
+      .small-light {
+        left: 1000px;
+      }
+      .large-light {
+        left: -700px;
+      }
+    }
+
+    .large-rectangle, .small-rectangle, .light {
+        background: linear-gradient($green1, $green2);
+        position:relative;
+        opacity:.5;
+
+        &:before,
+        &:after {
+          content: '';
+          @include fillbackground;
+          animation: opacity 6s infinite;
+          -webkit-animation: opacity 6s infinite;
+          -moz-animation: opacity 6s infinite;
+          opacity: 0;
+          }
+        &:before {
+          background: linear-gradient($orange2, $orange1);
+          animation-delay: 2s;
+        }
+        &:after {
+          background: linear-gradient($pink1, $pink2);
+          animation-delay: 4s;
+        }
+    }
+
+    .large-rectangle {
+      height: 1000px;
+      width: 288px;
+    }
+    .small-rectangle {
+      height: 1000px;
+      width: 35px;
+    }
+
+
+    .light-container {
+      position: absolute;
+      z-index: 100;
+      // transform:rotate(-72deg);
+
+      &.direction-up {
+        transform: rotate(180deg);
+        top: 1080px;
+        left: 50%;
+
+        .small-light {
+          transform: translateX(-35px);
+        }
+      }
+
+
+      .large-light, .small-light {
+        position:absolute;
+        top: -1000px;
+      }
+  }
+}
+
+
+
+  //
+  // #right-lights .large-rectangle, #left-lights .small-rectangle {
+  //   background: linear-gradient(90deg, $green1, $green2);
+  //
+  //   &:before,
+  //   &:after {
+  //     content: '';
+  //     @include fillbackground;
+  //     animation: opacity 6s infinite;
+  //     opacity: 0;
+  //     }
+  //   &:before {
+  //     background: linear-gradient(90deg,
+  //       $orange2, $orange1);
+  //     animation-delay: 2s;
+  //   }
+  //   &:after {
+  //     background: linear-gradient(90deg,
+  //       $pink1, $pink2);
+  //     animation-delay: 4s;
+  //   }
+  // }
+
+  // #left-lights {
+  //   left: 0;
+  //   top: 0;
+  //   bottom: 0;
+  //   height: 100%;
+  //   width: 300px;
+  //   position: absolute;
+  //   z-index:1;
+  //
+  //   .large-rectangle {
+  //       transform: rotate(-72deg) translateY(-763px);
+  //   }
+  //   .small-rectangle {
+  //       transform: rotate(-72deg) translateY(-384px) translateX(-580px);
+  //   }
+  // }
+  // #right-lights {
+  //   right: 0;
+  //   top: 0;
+  //   bottom: 0;
+  //   height: 100%;
+  //   width: 300px;
+  //   position: absolute;
+  //   z-index:1;
+  //
+  //   .large-rectangle {
+  //       transform: rotate(-72deg) translateY(-292px) translateX(-400px);
+  //   }
+  //   .small-rectangle {
+  //       transform: rotate(-72deg) translateY(-199px) translateX(-220px);
+  //   }
+  // }
+}
+
+
+
 
 #game-container {
   width:71%;
@@ -1024,73 +1229,12 @@ $orange2: rgb(241, 99, 34);
     height: 100%;
     width: 100%;
 
-    #animation-container {
-
-      .large-rectangle, .small-rectangle {
-          background: linear-gradient(-90deg, #a5ce37, rgb(56, 171, 37));
-          transform:rotate(-72deg);
-          opacity:.5;
-      }
-
-      .light-container {
-          width: 100%;
-          height: 100%;
-          position: relative;
-
-          .large-rectangle {
-              height: 288px;
-              width: 1500px;
-          }
-          .small-rectangle {
-              height: 35px;
-              width: 1000px;
-          }
-      }
-
-      #right-lights .large-rectangle, #left-lights .small-rectangle {
-        background: linear-gradient(90deg, #a5ce37, rgb(56, 171, 37));
-      }
-
-      #left-lights {
-        left: 0;
-        top: 0;
-        bottom: 0;
-        height: 100%;
-        width: 300px;
-        position: absolute;
-        z-index:-1;
-
-        .large-rectangle {
-            transform: rotate(-72deg) translateY(-763px);
-        }
-        .small-rectangle {
-            transform: rotate(-72deg) translateY(-384px) translateX(-580px);
-        }
-      }
-      #right-lights {
-        right: 0;
-        top: 0;
-        bottom: 0;
-        height: 100%;
-        width: 300px;
-        position: absolute;
-        z-index:-1;
-
-        .large-rectangle {
-            transform: rotate(-72deg) translateY(-292px) translateX(-400px);
-        }
-        .small-rectangle {
-            transform: rotate(-72deg) translateY(-199px) translateX(-220px);
-        }
-      }
-    }
-
     #score-bonus {
       position: absolute;
       color: white;
-      right: 160px;
-      top: 240px;
-      font-size: 80px;
+      right: 80px;
+      top: 400px;
+      font-size: 115px;
       text-transform: uppercase;
       font-weight: bold;
       text-align: center;
@@ -1098,31 +1242,44 @@ $orange2: rgb(241, 99, 34);
 
       #bonus-amount {
         font-weight: normal;
+        font-size: 140px;
 
         #bonus-num {
-          font-size: 110px;
+          font-size: 180px;
         }
       }
     }
 
-    .results-state {
-      margin-top: 200px;
+    .info-layer {
+      opacity:0;
+
+      .results-state {
+        margin-top: 200px;
+
+        * {
+          z-index: 100 !important;
+        }
+      }
     }
 
     .flavortext {
       color: white;
       font-family: 'Fresh Marker' !important;
-      font-size: 200px;
+      font-size: 160px;
       text-align: center;
       text-transform: uppercase;
+      line-height:140px;
+      z-index: 100;
+      margin-bottom: 60px;
 
       transform: rotate(-14deg);
     }
     #player-stats {
       @extend #winner-stats;
-      width: 558px;
-      float: right;
-      margin-right: 60px;
+      right: 40px;
+      width: 628px;
+      position: absolute;
+      bottom: 300px;
 
       .stat-text {
         display: flex;
@@ -1132,20 +1289,34 @@ $orange2: rgb(241, 99, 34);
         font-weight: normal;
         line-height: 1.3 !important;
         color: white;
+        text-transform:uppercase;
+        padding-right:0;
+
+        .stat-label {
+          padding-top:12px;
+        }
+        .stat-number {
+          font-weight: bold;
+          font-size: 150%;
+          line-height: 1;
+          // margin-top: -10px;
+          width:120px;
+          text-align:center;
+        }
       }
 
-      .stat-number {
-        font-weight: bold;
-        font-size: 75px;
-        line-height: 1;
-        margin-top: -10px;
-      }
+    }
+    #results-flavortext {
+      font-size: 170px;
+      z-index: 500;
+      position:relative;
     }
     #gameplay-flavortext {
       position: absolute;
       bottom: 0;
       width: 100%;
       text-align: center;
+      z-index: 500;
 
       * {
         font-family: inherit;
@@ -1153,10 +1324,10 @@ $orange2: rgb(241, 99, 34);
         line-height: 1;
       }
       .top {
-        transform: rotate(-14deg) translate(-130px, -15px);
+        transform: translate(-100px, -15px) rotate(-14deg);
       }
       .bottom {
-        transform: rotate(-14deg) translate(130px, 0px);
+        transform: translate(80px, -5px) rotate(-14deg);
       }
     }
 
@@ -1167,6 +1338,7 @@ $orange2: rgb(241, 99, 34);
       height: 200px;
       width: 255px;
       filter: drop-shadow(-25px 10px 5px rgba(0,0,0,0.5));
+      z-index:500;
 
       #sponsorGround {
         height: 100%;
@@ -1232,3 +1404,139 @@ $orange2: rgb(241, 99, 34);
 		background-position: 100% 50%
 	}
 } */
+
+
+
+
+
+
+$shadow: 0 0 20px rgba(0,0,0,.7) inset;
+$bg: #121212;
+
+// BODY {
+//   background: $bg;
+//   font-style: 10px;
+//   }
+// // .wrapper {
+// //   @include common;
+// //   height: 300px;
+// //   margin: auto;
+// //   text-align: center;
+// //   }
+
+// .box {
+//   position: relative;
+//   width: 300px;
+//   height: 300px;
+//   margin: 0 auto;
+//   border-radius: 50px;
+//   background: linear-gradient(90deg,crimson, orangered, gold);
+//   &:before,
+//   &:after {
+//     content: '';
+//     @include common;
+//     box-shadow: $shadow;
+//     animation: opacity 6s infinite;
+//     opacity: 0;
+//     }
+//   &:before {
+//     background: linear-gradient(90deg,
+//       yellow, yellowgreen, steelblue);
+//     animation-delay: 2s;
+//   }
+//   &:after {
+//     background: linear-gradient(90deg,
+//       skyblue, violet, purple);
+//     animation-delay: 4s;
+//   }
+// }
+
+@keyframes opacity {
+  30% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0;
+  }
+}
+
+
+
+
+
+
+
+//resizeable stuff
+.very-specific-design {
+  width: 1920px;
+  height: 1080px;
+  // padding: 50px;
+  text-align: center;
+  // background: white;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  // transform: translate(-50%, -50%);
+  transform-origin: top left;
+}
+
+.scaleable-wrapper {
+  // padding: 20px;
+  resize: both;
+  position: relative;
+  // background: #666;
+  height: 1080px; //was 400px;
+}
+
+// .ui-resizable-se {
+//   width: 10px;
+//   height: 10px;
+//   background: orange;
+//   position: absolute;
+//   bottom: 0;
+//   right: 0;
+// }
+
+
+
+
+
+
+.dot1, .dot2, .dot3 {
+  animation: loading 4s infinite;
+  -webkit-animation: loading 3s infinite;
+  -moz-animation: loading 3s infinite;
+  opacity: 0;
+}
+.dot2 {
+  animation-delay: 1s;
+  animation: loading 3s infinite;
+  -webkit-animation: loading 3s infinite;
+  -moz-animation: loading 3s infinite;
+}
+.dot3 {
+  animation-delay: 2s;
+  animation: loading 2s infinite;
+  -webkit-animation: loading 2s infinite;
+  -moz-animation: loading 2s infinite;
+}
+
+@keyframes loading {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+#screen-overlay h2.general-text {
+    font-size: 400%;
+}
+
+#screen-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

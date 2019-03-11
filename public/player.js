@@ -5,12 +5,14 @@ var engine = new BABYLON.Engine(canvas, true, null, false);
 
 var $window = $(window);
 var $pages = $('.pages'); // Input for roomname
-var $gameover = $('#gameover');
+// var $gameover = $('#gameover');
 var $passcodeInput = $('.passcodeInput'); // Input for roomname
 // var $usernameInput = $('.usernameInput');
 var $passcodePage = $('.passcode.page'); // The roomchange page
 
 var shotInfo;
+
+var gameName = '';
 
 var basketball;
 var dragging = false;
@@ -73,8 +75,8 @@ function createScene() {
     overlayMaterial = new BABYLON.StandardMaterial("overlayMaterial", scene);
     var multimat = new BABYLON.MultiMaterial("multi", scene);
 
-    baseMaterial.emissiveTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_V2_Albedo.png", scene);
-    baseMaterial.diffuseTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_V2_Albedo.png", scene);
+    baseMaterial.emissiveTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_noLogo-v2.png", scene);
+    baseMaterial.diffuseTexture = new BABYLON.Texture("babylon/assets/BBall_V2/BBall_noLogo-v2.png", scene);
     baseMaterial.diffuseTexture.hasAlpha = true;
 
     overlayMaterial.ambientColor = new BABYLON.Color3(1,.4,.2);
@@ -297,7 +299,7 @@ function createScene() {
       new BABYLON.ExecuteCodeAction(
           {
               trigger: BABYLON.ActionManager.OnKeyUpTrigger,
-              additionalData: 'r'
+              additionalData: "r"
           },
 
           function ()
@@ -312,7 +314,7 @@ function createScene() {
       new BABYLON.ExecuteCodeAction(
           {
               trigger: BABYLON.ActionManager.OnKeyUpTrigger,
-              additionalData: 't'
+              additionalData: "t"
           },
 
           function ()
@@ -329,6 +331,11 @@ function createScene() {
 engine.runRenderLoop(function(){
 
   scene.render();
+
+  $( document ).ready( function() {
+    UILoadingAnimateOut();
+
+  });
 });
 
 function randomRange (min, max) {
@@ -336,7 +343,7 @@ function randomRange (min, max) {
     return number;
 }
 
-$gameover.fadeOut();
+// $gameover.fadeOut();
 // $passcodeInput.focus();
 $window.keydown(function (event) {
   // When the client hits ENTER on their keyboard
@@ -344,6 +351,13 @@ $window.keydown(function (event) {
     initializePlayer();
     $passcodeInput.blur();
   }
+});
+
+$(document).ready(function(){
+    $("#submit-gamecode").on('click', function () {
+      initializePlayer();
+      $passcodeInput.blur();
+    });
 });
 
 function submitGameCode() {
@@ -423,42 +437,45 @@ function cleanInput(input) {
 }
 
 socket.on('reset game', function(){
-    UIGameoverAnimateOut();
+    // UIGameoverAnimateOut();
     console.log("reset game EMIT");
 });
 
 socket.on('you joined court', function() {
+    UIInputErrorMessage('Joining Court')
     UIInputAnimateOut(); //from input.js (then customize.js)
 });
 socket.on('court not found', function() {
-    console.log("COURT NOT FOUND");
+    UIInputErrorMessage("Invalid Game Code");
 });
 
 socket.on('someone already playing', function() {
-    console.log("someone already playing");
+    UIInputErrorMessage("someone already playing");
 });
 
 socket.on('game already running', function() {
-    console.log("game already running");
+    UIInputErrorMessage("game already started");
 });
 
 socket.on('game almost ready', function(gamedata) {
     //fade out customization screen
     //roll in ball;
+    gameName = gamedata.game.name;
 
     var ae = BABYLON.ActionEvent.CreateNewFromScene(scene, {additionalData: "r"});
-    console.log("GAME ALMOST READY RECEIVED");
+    console.log("GAME ALMOST READY RECEIVED - " + gamedata.game.name);
     scene.actionManager.processTrigger(scene.actionManager.actions[0].trigger,  ae);
 });
 socket.on('end all games', function() {
     console.log('Games Ended, look at results screen');
     //show this players score
-    $gameover.fadeIn();
+    // $gameover.fadeIn();
     var ae = BABYLON.ActionEvent.CreateNewFromScene(scene, {additionalData: "t"});
     //console.log(ae);
     scene.actionManager.processTrigger(scene.actionManager.actions[1].trigger,  ae);
     //$passcodeInput.text = "";
     //scene.actionManager.processTrigger(scene.actionManager.actions[1].trigger, {additionalData: "t"});
+
     UIGameplayAnimateOut();
     console.log("GAMES ENDED");
 });
@@ -466,4 +483,5 @@ socket.on('end all games', function() {
 socket.on('show results', function(resultsdata) {
   console.log('Results:');
   console.dir(resultsdata);
+  redirectNormal(resultsdata);
 });

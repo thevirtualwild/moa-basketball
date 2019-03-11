@@ -1,10 +1,14 @@
 var inputFadeTime = 0.25;
 
 var canvas = document.getElementById("canvas");
-var inputForm = document.getElementsByClassName("form")[0];
-var errorMessage = inputForm.getElementsByClassName("errorMessage")[0];
-var passcodeInput = inputForm.getElementsByClassName("passcodeInput")[0];
-errorMessage.style.opacity = 0;
+var inputForm = $("#passcodePage .form");
+var errorMessage = $("#passcodePage .form .errorMessage");
+var passcodeInput = $("#passcodePage .form .passcodeInput");
+errorMessage.css({opacity:0});
+var passcodePage = $("#passcodePage");
+var playerPage = $("#playerPage");
+
+var loading_overlay = $('#screen-overlay');
 
 var initPosY;
 var body = document.body,
@@ -13,33 +17,60 @@ var body = document.body,
 var height = Math.max( body.scrollHeight, body.offsetHeight,
     html.clientHeight, html.scrollHeight, html.offsetHeight );
 
-    passcodeInput.defaultValue = "";
-    passcodeInput.focus();
+    passcodeInput.val("");
+    // passcodeInput.focus();
+
+function UILoadingAnimateOut()
+{
+  TweenMax.to(loading_overlay, inputFadeTime, {delay:inputFadeTime*4, opacity:0, visibility:'hidden', onComplete: UIInputAnimateIn});
+}
 
 function UIInputAnimateIn()
 {
-    passcodeInput.value = "";
-    passcodeInput.focus();
-    errorMessage.style.opacity = 0;
-    inputPage.style.display = "block";
-    customizePage.style.display = "none";
-    gameoverPage.style.display = "none";
+  loading_overlay.css({display:'none!important'});
+
+    passcodeInput.val("");
+    passcodeInput.blur();
+    errorMessage.css({opacity:0});
+    passcodePage.css({opacity:1});
+    playerPage.css({display:"none"});
     TweenMax.to(inputForm, inputFadeTime*3.5, {delay:inputFadeTime, opacity:1});
-    TweenMax.to(inputForm, inputFadeTime*3, {delay:inputFadeTime, top:height *.4, ease:Back.easeOut});
+    // TweenMax.to(inputForm, inputFadeTime*3, {delay:inputFadeTime, top:height *.4, ease:Back.easeOut});
 }
 
 function UIInputAnimateOut()
 {
     //console.log()
-    initPosY = parseFloat(inputForm.style.top.substr(0, inputForm.style.top.length-2));
-    errorMessage.style.opacity = 0;
+    // initPosY = parseFloat(inputForm.style.top.substr(0, inputForm.style.top.length-2));
+    errorMessage.css({opacity:0});
+
+    TweenMax.to(passcodePage, inputFadeTime*3.5, {delay:inputFadeTime, opacity:0, onComplete: UICustomizeAnimateIn});
     TweenMax.to(inputForm, inputFadeTime*3.5, {delay:inputFadeTime, opacity:0});
-    TweenMax.to(inputForm, inputFadeTime*3, {delay:inputFadeTime, top:0, ease:Back.easeIn, onComplete: UICustomizeAnimateIn});
 }
 
 function UIInputErrorMessage(message)
 {
-    errorMessage.style.opacity = 1;
-    errorMessage.style.color = "red";
-    errorMessage.innerHTML = message;
+    errorMessage.css({opacity:1});
+    errorMessage.css({color:"red"});
+    errorMessage.html(message);
 }
+
+
+//
+$( document ).ready( function() {
+  $('.passcodeInput').blur(function() {
+     if(!$.trim(this.value).length) { // zero-length string AFTER a trim
+       $(this).addClass('blinking');
+     } else {
+       $(this).removeClass('blinking');
+     }
+     $('#footerLogo').show();
+     // $('.form .title').show();
+     $('.button-container').show();
+  });
+  $('.passcodeInput').focus(function() {
+     $('#footerLogo').hide();
+     // $('.form .title').hide();
+     $('.button-container').hide();
+  });
+});
