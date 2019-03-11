@@ -470,7 +470,16 @@ function createScene()
 
     var torus = BABYLON.Mesh.CreateTorus("torus", 4.3, 0.2, 50, scene);
     torus.position = new BABYLON.Vector3(0, -4.75, 8.9);
+
+
+    /* START JAY JAY */
+    var greenMat                = new BABYLON.StandardMaterial("greenMat", scene);
+    greenMat.emissiveColor      = new BABYLON.Color3(0, 1, 0);
     scene.meshes.pop(torus);
+    /* END JAY JAY */
+
+    torus.material = greenMat;
+
 
     var basketballs = [];
 
@@ -970,23 +979,38 @@ function createScene()
 
     //CREATE CIRCLE OF SPHERE COLLIDERS
     var sphereAmount = 10;
-    var radius = 3.5;
+    var rimRadius = 3.5;
     var sphereDiameter = 1;
     var centerPos = torus.position;
     centerPos.y += 0.4;
+
+    /* START JAY JAY */
+    var redMat                = new BABYLON.StandardMaterial("redMat", scene);
+  	redMat.emissiveColor      = new BABYLON.Color3(1, 0, 0);
+    /* END JAY JAY */
+
     for(var i = 0; i < sphereAmount; i++)
     {
-        var sphere = BABYLON.Mesh.CreateSphere("sphere", 10, sphereDiameter, scene);
+        //var sphere = BABYLON.Mesh.CreateSphere("sphere", 10, sphereDiameter, scene);
+
+        /* START JAY JAY */
+        var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: sphereDiameter}, scene);
+        sphere.material = redMat;
+        /* END JAY JAY */
+
         sphere.position = new BABYLON.Vector3(
-            centerPos.x + Math.sin(i*Math.PI * 2/sphereAmount) * radius,
+            centerPos.x + Math.sin(i*Math.PI * 2/sphereAmount) * rimRadius,
             centerPos.y + 0,
-            centerPos.z + Math.cos(i*Math.PI * 2/sphereAmount) * radius
+            centerPos.z + Math.cos(i*Math.PI * 2/sphereAmount) * rimRadius
         );
 
         sphere.physicsImpostor = new BABYLON.PhysicsImpostor(sphere, BABYLON.PhysicsImpostor.SphereImpostor, {mass: 0,
             friction: 1,
             restitution:4} )
+
+        /* START JAY JAY */
         scene.meshes.pop(sphere);
+        /* END JAY JAY */
     }
 
     centerPos.y -= 0.5;
@@ -1003,9 +1027,9 @@ function createScene()
 
     //CREATE COLLIDERS FOR NET
     var sphereAmount      = 10;
-    var radius            = 3.3;
-    //var radius            = 3.4;
-    var sphereDiameter    = .6;
+    var netRadius         = 3.3;
+    //var radius            = 3.3;
+    var sphereDiameter    = .5;
     // var sphereDiameter    = .1;
     var centerPos         = torus.position;
     var registered        = false;
@@ -1016,11 +1040,16 @@ function createScene()
     {
         for (var i = 0; i < sphereAmount; i++)
         {
-            var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 10, sphereDiameter, scene);
+            /* START JAY JAY */
+            var sphere1       = BABYLON.MeshBuilder.CreateSphere("sphere1", {diameter: sphereDiameter}, scene);
+            sphere1.material  = redMat;
+            //var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 10, sphereDiameter, scene);
+            /* END JAY JAY */
+
             sphere1.position = new BABYLON.Vector3(
-                centerPos.x + Math.sin(i * Math.PI * 2 / sphereAmount) * radius * (1- (j/2/height)),
+                centerPos.x + Math.sin(i * Math.PI * 2 / sphereAmount) * netRadius * (1- (j/2/height)),
                 centerPos.y + height - j,
-                centerPos.z + Math.cos(i * Math.PI * 2 / sphereAmount) * radius * (1- (j/2/height))
+                centerPos.z + Math.cos(i * Math.PI * 2 / sphereAmount) * netRadius * (1- (j/2/height))
             );
 
             var currentMass;
@@ -1071,7 +1100,7 @@ function createScene()
                     }
                     else
                     {
-                        currentRestitution = 3;
+                        currentRestitution = 4;
                     }
                 }
             }
@@ -1085,23 +1114,30 @@ function createScene()
                 currentMass = 0;
             }
 
-            var sphere2 = BABYLON.Mesh.CreateSphere("sphere1", 10, sphereDiameter, scene);
+            /* START JAY JAY */
+            //var sphere2     = BABYLON.Mesh.CreateSphere("sphere1", 10, sphereDiameter, scene);
+            var sphere2       = BABYLON.MeshBuilder.CreateSphere("sphere2", {diameter: sphereDiameter}, scene);
+            sphere2.material  = redMat;
+            /* END JAY JAY */
 
             sphere2.position = new BABYLON.Vector3(
-                centerPos.x + Math.sin(i * Math.PI * 2 / sphereAmount) * radius * (1- (j/2/height)),
+                centerPos.x + Math.sin(i * Math.PI * 2 / sphereAmount) * netRadius * (1- (j/2/height)),
                 centerPos.y + height - j,
-                centerPos.z + Math.cos(i * Math.PI * 2 / sphereAmount) * radius * (1- (j/2/height))
+                centerPos.z + Math.cos(i * Math.PI * 2 / sphereAmount) * netRadius * (1- (j/2/height))
             );
 
-            netVisiblePositions.push(sphere2);
+            /* START JAY JAY */
+            sphere2.material = redMat;
             scene.meshes.pop(sphere2);
+            /* END JAY JAY */
+
+            netVisiblePositions.push(sphere2);
 
             sphere1.physicsImpostor = new BABYLON.PhysicsImpostor(sphere1, BABYLON.PhysicsImpostor.SphereImpostor, {
                 mass: currentMass,
                 restitution: currentRestitution
             });
 
-            //sphere1.physicsImpostor.
             netSpheres.push(sphere1);
 
             if(!registered)
@@ -1121,6 +1157,7 @@ function createScene()
                                 netSpheres[k].physicsImpostor.setLinearVelocity(currentSphereVel);
                             }
                         }
+
                         registered = true;
                     }
                 });
@@ -1139,16 +1176,16 @@ function createScene()
 
             if(row == 0)
             {
-                horiDistance = 1.85;
+                horiDistance = 1.6;
             }
             else if(row == 1)
             {
-                horiDistance = 1.2;
+                horiDistance = 1.3;
                 vertDistance = 2.25;
             }
             else if(row == 2)
             {
-                horiDistance = 1;
+                horiDistance = 1.1;
                 vertDistance = 1.5
             }
             else if(row == 3)
