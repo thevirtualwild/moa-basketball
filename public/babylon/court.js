@@ -16,6 +16,7 @@ var currentNetState     = netStates.FREE;
 var cameraNames         = Object.freeze({"freeThrow": 0, "quarterFar": 1, "close": 2});
 var selectedCameraType  = cameraNames.freeThrow;
 
+
 var m_BasketballCount   = 6;
 
 // var basketballStates    = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -165,7 +166,7 @@ function createScene()
     /* END BACKBOARD SHOTCLOCK */
 
     //
-
+    //DAVID: this wasn't clock issue
     changeGameState(gameStates.ATTRACT);
 
     function changeGameState(gameState)
@@ -179,6 +180,10 @@ function createScene()
                 gameReady           = false;
                 //console.log("Aspect Ratio: " + canvas.width/canvas.height);
                 lobbyStarted        = false;
+
+                scoremodifier = 1;
+                combopts = 0;
+
                 resetBallColor();
 
                 if(ISMASTER)
@@ -189,7 +194,6 @@ function createScene()
                 updateUI();
                 combo               = 0;
                 changeBallFX(false);
-                roomReset           = false;
 
                 break;
 
@@ -216,10 +220,7 @@ function createScene()
 
                 updateUI();
 
-                if(ISTEAMGAME)
-                {
-                  updateBallColor();
-                }
+                updateBallColor();
 
                 break;
 
@@ -230,6 +231,11 @@ function createScene()
 
                 gameOver();
                 updateUI();
+                // TweenMax.delayedCall(2,gameOver);
+                // TweenMax.delayedCall(3,updateUI);
+
+                //DAVID: This should really be called at the end of results. Not sure exactly how or when
+                TweenMax.delayedCall(initResultsTime + 2,roomReset);
 
                 initRun             = false;
 
@@ -395,7 +401,7 @@ function createScene()
           currentGameTime -= (engine.getDeltaTime() / 1000);
           if(combopts > 1)
           {
-            combopts -= (scoremodifier-1 * (engine.getDeltaTime() / 8000) ); //change for combo dropoff
+            combopts -= (scoremodifier * (engine.getDeltaTime() / 8000) ); //change for combo dropoff
             updateScoreModifier();
           }
 
@@ -414,17 +420,11 @@ function createScene()
       {
           currentResultsTime -= (engine.getDeltaTime() / 1000);
 
-          if(currentResultsTime <= -2 && !roomReset)
+          if(currentResultsTime <= -2)
           {
               resetClock();
               updateClock();
               UIResultsAnimateOut();
-
-              if(ISMASTER)
-              {
-                  socket.emit('room reset');
-                  roomReset = true
-              }
           }
           else if(currentResultsTime <= 0)
           {
@@ -470,16 +470,14 @@ function createScene()
 
     var torus = BABYLON.Mesh.CreateTorus("torus", 4.3, 0.2, 50, scene);
     torus.position = new BABYLON.Vector3(0, -4.75, 8.9);
-
-
     /* START JAY JAY */
     var greenMat                = new BABYLON.StandardMaterial("greenMat", scene);
     greenMat.emissiveColor      = new BABYLON.Color3(0, 1, 0);
     scene.meshes.pop(torus);
-    /* END JAY JAY */
 
     torus.material = greenMat;
 
+    /* END JAY JAY */
 
     var basketballs = [];
 
@@ -514,7 +512,7 @@ function createScene()
         baseMaterial.diffuseTexture.hasAlpha = true;
 
         var overlayMaterial             = new BABYLON.StandardMaterial("overlayMaterial", scene);
-        overlayMaterial.ambientColor    = new BABYLON.Color3(1,.4,.2);
+        overlayMaterial.ambientColor    = defaultColor3;
 
         var multimat                    = new BABYLON.MultiMaterial("multi", scene);
         multimat.subMaterials.push(baseMaterial);
@@ -983,21 +981,16 @@ function createScene()
     var sphereDiameter = 1;
     var centerPos = torus.position;
     centerPos.y += 0.4;
-
     /* START JAY JAY */
     var redMat                = new BABYLON.StandardMaterial("redMat", scene);
   	redMat.emissiveColor      = new BABYLON.Color3(1, 0, 0);
     /* END JAY JAY */
-
     for(var i = 0; i < sphereAmount; i++)
     {
-        //var sphere = BABYLON.Mesh.CreateSphere("sphere", 10, sphereDiameter, scene);
-
         /* START JAY JAY */
         var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: sphereDiameter}, scene);
         sphere.material = redMat;
         /* END JAY JAY */
-
         sphere.position = new BABYLON.Vector3(
             centerPos.x + Math.sin(i*Math.PI * 2/sphereAmount) * rimRadius,
             centerPos.y + 0,
@@ -1007,10 +1000,7 @@ function createScene()
         sphere.physicsImpostor = new BABYLON.PhysicsImpostor(sphere, BABYLON.PhysicsImpostor.SphereImpostor, {mass: 0,
             friction: 1,
             restitution:4} )
-
-        /* START JAY JAY */
         scene.meshes.pop(sphere);
-        /* END JAY JAY */
     }
 
     centerPos.y -= 0.5;
@@ -1027,10 +1017,8 @@ function createScene()
 
     //CREATE COLLIDERS FOR NET
     var sphereAmount      = 10;
-    var netRadius         = 3.3;
-    //var radius            = 3.3;
+    var netRadius            = 3.3;
     var sphereDiameter    = .5;
-    // var sphereDiameter    = .1;
     var centerPos         = torus.position;
     var registered        = false;
     centerPos.y -= 4;
@@ -1040,12 +1028,11 @@ function createScene()
     {
         for (var i = 0; i < sphereAmount; i++)
         {
-            /* START JAY JAY */
-            var sphere1       = BABYLON.MeshBuilder.CreateSphere("sphere1", {diameter: sphereDiameter}, scene);
-            sphere1.material  = redMat;
-            //var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 10, sphereDiameter, scene);
-            /* END JAY JAY */
-
+          /* START JAY JAY */
+          var sphere1       = BABYLON.MeshBuilder.CreateSphere("sphere1", {diameter: sphereDiameter}, scene);
+          sphere1.material  = redMat;
+          //var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 10, sphereDiameter, scene);
+          /* END JAY JAY */
             sphere1.position = new BABYLON.Vector3(
                 centerPos.x + Math.sin(i * Math.PI * 2 / sphereAmount) * netRadius * (1- (j/2/height)),
                 centerPos.y + height - j,
@@ -1089,10 +1076,12 @@ function createScene()
                     if(j == 0)
                     {
                         currentRestitution = 8;
+                        //currentRestitution = 10;
                     }
                     else if(j == 1)
                     {
                         currentRestitution = 8;
+                        // currentRestitution = 9;
                     }
                     else if(j == 2)
                     {
@@ -1101,6 +1090,7 @@ function createScene()
                     else
                     {
                         currentRestitution = 4;
+                        // currentRestitution = 3;
                     }
                 }
             }
@@ -1157,7 +1147,6 @@ function createScene()
                                 netSpheres[k].physicsImpostor.setLinearVelocity(currentSphereVel);
                             }
                         }
-
                         registered = true;
                     }
                 });
@@ -1507,7 +1496,8 @@ function createScene()
     {
         for(var i = 0; i < basketballs.length; i++)
         {
-            newBasketballs[i].material.subMaterials[1].ambientColor = playerData.team.colorRGB;
+            newBasketballs[i].material.subMaterials[1].ambientColor = defaultColor3;
+
             //newBasketballOutlines[i].material.ambientColor = playerData.team.colorRGB;
         }
     }
@@ -1519,7 +1509,7 @@ function createScene()
         if(basketballs === undefined) return;
         for(var i = 0; i < basketballs.length; i++)
         {
-            newBasketballs[i].material.subMaterials[1].ambientColor = new BABYLON.Color3(1,.4,.2);
+            newBasketballs[i].material.subMaterials[1].ambientColor = defaultColor3;
             //newBasketballOutlines[i].material.ambientColor = new BABYLON.Color3(1,.4,.2);
         }
     }
@@ -2035,6 +2025,13 @@ socket.on('set master', function()
 });
 
 ///////////////////////////////////////////////////////////////////////
+function roomReset() {
+    if(ISMASTER)
+    {
+        socket.emit('room reset');
+    }
+}
+///////////////////////////////////////////////////////////////////////
 
 function fakeSyncData(_syncData)
 {
@@ -2160,11 +2157,18 @@ socket.on('player joined court', function(userdata)
       playerData  = userdata;
       hasplayer   = true;
 
+      if (!lobbyStarted) {
+        socket.emit('start lobby', userdata);
+      } else {
+        socket.emit('add player to game', userdata);
+      }
+
       scene.actionManager.processTrigger(scene.actionManager.actions[2].trigger, {additionalData: "changeGameStateWaiting"});
     }
     else
     {
       //IS THIS WHERE LOBBY IS STARTED??
+      //DAVID: To Add "Waiting Countdown for attract screen (should be a new state) add it here"
       lobbyStarted = true;
       console.log('Player ' + userdata.username + ' - Joined Sister Court - ' + userdata.court);
     }
